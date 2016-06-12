@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.papi.smarthomesense.mapper.SenseDeviceSceneLinkMapper">
+	<!-- 数据表和实体类的对应 -->
+	<resultMap id="rs_SenseDeviceSceneLink" type="cn.com.papi.smarthomesense.bean.SenseDeviceSceneLink">
+		<result property="id" column="id" javaType="java.lang.Integer"
+			jdbcType="INTEGER" />
+		<result property="idGateway" column="id_gateway" javaType="java.lang.String"
+			jdbcType="VARCHAR" />
+		<result property="idDevice" column="id_device" javaType="java.lang.String"
+			jdbcType="VARCHAR" />
+		<result property="idChannel" column="id_Channel" javaType="java.lang.Integer"
+			jdbcType="INTEGER" />
+		<result property="idScene" column="id_scene" javaType="java.lang.Integer"
+			jdbcType="INTEGER" />	
+	</resultMap>
+	
+	<!-- 添加 -->
+	<insert id="insert" parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceSceneLink">
+		INSERT INTO sense_device_scene_link
+		(id_gateway,id_device,id_channel,id_scene) 
+		 VALUES
+		(#{idGateway},
+		 #{idDevice},
+		 #{idChannel},
+		 #{idScene})
+		<selectKey keyProperty="id" resultType="int" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="java.util.Map">
+		DELETE FROM sense_device_scene_link
+		<trim prefix="where" prefixOverrides="and | or">
+		    <if test="null != idDevice">
+		       AND id_device = #{idDevice}
+		    </if>
+			<if test="0 != idChannel">
+				AND id_channel = #{idChannel}
+			</if>
+			<if test="0 != idScene">
+			    AND id_scene = #{idScene}
+			</if>
+			<if test="0 != id">
+			    AND id= #{id}
+			</if>
+		</trim>
+	</delete>		
+	
+	<!-- 查看 -->	
+	<select id="listAll" resultMap="rs_SenseDeviceSceneLink">
+	    SELECT * FROM sense_device_scene_link
+	</select>
+	
+	<select id="listByBean" resultMap="rs_SenseDeviceSceneLink" 
+	    parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceSceneLink">
+		SELECT * FROM sense_device_scene_link
+		<trim prefix="where" prefixOverrides="and | or">
+		    <if test="null != idGateway">
+		        AND id_gateway = #{idGateway}
+		    </if>
+		    <if test="null != idDevice">
+		        AND id_device = #{idDevice}
+		    </if>
+			<if test="0 != idChannel">
+				AND id_channel=#{idChannel}
+			</if>
+			<if test="0 != idScene">
+			    AND id_scene = #{idScene}
+			</if>			
+		</trim>
+	</select>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceSceneLink">
+		UPDATE sense_device_scene_link
+		<set>
+		    <if test="null != idGateway">
+		        id_gateway = #{idGateway},
+		    </if>
+		    <if test="null != idDevice">
+		        id_device = #{idDevice},
+		    </if>
+			<if test="0 != idChannel">
+			    id_channel=#{idChannel},
+			</if>
+			<if test="idScene != 0">
+				id_scene=#{idScene},
+			</if>							
+		</set>
+		WHERE
+		<trim prefixOverrides="and | or">		    
+			<if test="0 != id">
+				AND id =# {id}
+			</if>
+		</trim>
+	</update>
+	
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.papi.smarthomesense.mapper.SenseDeviceStateLogMapper">
+	<!-- 数据表和实体类的对应 -->
+	<resultMap id="rs_SenseDeviceStateLog" type="cn.com.papi.smarthomesense.bean.SenseDeviceStateLog">
+		<result property="id" column="id" javaType="java.lang.Integer"
+			jdbcType="INTEGER" />
+		<result property="idGateway" column="id_gateway" javaType="java.lang.String"
+			jdbcType="VARCHAR" />
+		<result property="idDevice" column="id_device" javaType="java.lang.String"
+			jdbcType="VARCHAR" />
+		<result property="deviceType" column="device_type" javaType="java.lang.String"
+			jdbcType="VARCHAR" />
+		<result property="stateCode" column="tostateCodeken" javaType="java.lang.Integer"
+			jdbcType="INTEGER" />
+		<result property="stateName" column="stateName" javaType="java.lang.String"
+			jdbcType="VARCHAR" />
+		<result property="time" column="time" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+		
+	<!-- 添加 -->    
+    <insert id="insert" parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceStateLog">
+        INSERT INTO sense_device_state_log 
+        (id_gateway,id_device,device_type,stateCode,stateName,time)
+        values (#{idGateway},
+        		#{idDevice},
+        		#{deviceType},
+        		#{stateCode},
+        		#{stateName},
+        		#{time})
+    </insert>
+</mapper>
