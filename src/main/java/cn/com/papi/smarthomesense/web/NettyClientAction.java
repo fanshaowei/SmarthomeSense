@@ -2,8 +2,6 @@ package cn.com.papi.smarthomesense.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,12 +32,8 @@ import cn.com.papi.smarthomesense.bean.RegDevToGwBean;
 import cn.com.papi.smarthomesense.bean.SenseChannelBean;
 import cn.com.papi.smarthomesense.bean.SenseDeviceBean;
 import cn.com.papi.smarthomesense.bean.SenseGatewayBean;
-import cn.com.papi.smarthomesense.bean.UserBean;
 import cn.com.papi.smarthomesense.enums.DataPacketTypes;
 import cn.com.papi.smarthomesense.enums.SenseDeviceType;
-import cn.com.papi.smarthomesense.proxy.CglibProxyFactory;
-import cn.com.papi.smarthomesense.proxy.UserAuthenticationFactory;
-import cn.com.papi.smarthomesense.proxy.ProxyHandler;
 import cn.com.papi.smarthomesense.service.INettyControlDevUtil;
 import cn.com.papi.smarthomesense.service.IRedisUtilService;
 import cn.com.papi.smarthomesense.service.ISenseChannelService;
@@ -50,7 +44,12 @@ import cn.com.papi.smarthomesense.service.IUserService;
 import cn.com.papi.smarthomesense.utils.BaseAction;
 import cn.com.papi.smarthomesense.utils.CommonUtils;
 
-
+/**
+ * 
+ * @author fanshaowei
+ *  
+ * 该类用于处理向网关注册设备的请求。 
+ */
 @Controller
 public class NettyClientAction extends BaseAction{	
 	private static String getIP = "";
@@ -89,6 +88,12 @@ public class NettyClientAction extends BaseAction{
 		thread.start();
 	}
 	
+	/**
+	 * 添加设备，注册设备到网关，并异步添加数据到数据库
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
 	@RequestMapping(value="/addDevice",method=RequestMethod.POST)
 	public void addDevice(HttpServletRequest request, HttpServletResponse response) throws Exception{		
 		Gson gson = new Gson();
@@ -284,6 +289,11 @@ public class NettyClientAction extends BaseAction{
 								
 	}		
  
+	/**
+	 * 删除设备，从网关删除注册信息，并异步删除数据库的数据 
+	 * @param request
+	 * @param response
+	 */
 	@RequestMapping(value="deleteDevice",method=RequestMethod.POST)
 	public void deleteDevice(HttpServletRequest request, HttpServletResponse response){
 		String reqString = CommonUtils.ReqtoString(request);
@@ -351,7 +361,7 @@ public class NettyClientAction extends BaseAction{
 				ac.setTimeout(30 * 1000);
 				new Work(ac).start();
 				
-				final String keyAsyncResp = "del"+idGateway;//将网关ID作为传递异步response的键值
+				final String keyAsyncResp = "del_"+idGateway;//将网关ID作为传递异步response的键值
 				ServletHashMap.ASYNC_CONTEXT_DELETE.put(keyAsyncResp, ac);
 				ac.addListener(new AsyncListener(){
 

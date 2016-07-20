@@ -19,7 +19,14 @@
                           两个bean,是spring MVC为@Controllers分发请求所必须的。
                            并提供了：数据绑定支持，@NumberFormatannotation支持，@DateTimeFormat支持，
            @Valid支持，读写XML的支持（JAXB），读写JSON的支持（Jackson） --> 
-     <mvc:annotation-driven/>              
+     <mvc:annotation-driven>
+         <!--设置@Responbody的返回字符编码为utf8  -->
+         <mvc:message-converters register-defaults="true">
+		     <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+		         <property name="supportedMediaTypes" value="text/html;charset=UTF-8"/>
+		     </bean>
+        </mvc:message-converters>
+     </mvc:annotation-driven>              
      
      <!-- 配置过滤静态资源，不受拦截 (单独使用springmvc时需要配置)-->                 
      <mvc:resources location="/" mapping="/**/*.css" />

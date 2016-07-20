@@ -150,11 +150,11 @@
 	    <version>2.6.2</version>
 	</dependency>
 	
-	<!-- <dependency>
+	<dependency>
 		    <groupId>commons-httpclient</groupId>
 		    <artifactId>commons-httpclient</artifactId>
 		    <version>3.1</version>
-		</dependency> -->
+    </dependency>
 	<!-- <dependency>
 		<groupId>org.apache.httpcomponents</groupId>
 		<artifactId>httpclient</artifactId>
@@ -165,7 +165,7 @@
 	    <groupId>org.apache.httpcomponents</groupId>
 	    <artifactId>httpasyncclient</artifactId>
 	    <version>4.1.1</version>
-	</dependency>
+	</dependency>		
 	
   </dependencies>
   

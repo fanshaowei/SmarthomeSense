@@ -1,5 +1,10 @@
 package cn.com.papi.smarthomesense.enums;
 
+/**
+ * 设备名字及设备编码
+ * @author fanshaowei
+ *
+ */
 public enum SenseDeviceType {
 	
 	A1("人体红外与亮度感应器","0511"),
