@@ -8,6 +8,7 @@ import net.sf.json.JSONObject;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -34,7 +35,7 @@ public class DailyTriggerSceneAction {
 	IRedisUtilService redisUtilService;
 	
 	@RequestMapping(value="dailyTriggerScene",method=RequestMethod.GET)
-	public JSONObject dailyTriggerScene(@RequestParam("sceneId") String sceneId, @RequestParam("name") String username){
+	public JSONObject dailyTriggerScene(@RequestParam("idScene") String idScene, @RequestParam("username") String username){
 		logger.info("---------------定时控制情景-----------------------");
 		
 		JSONObject jsonObject = null;
@@ -44,12 +45,18 @@ public class DailyTriggerSceneAction {
 		String sceneUrl = SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
    	    sceneUrl = sceneUrl.replace(":username", username)
 	       .replace(":reqToken", reqToken)
-	       .replace(":idScene", sceneId);	
+	       .replace(":idScene", idScene);	
 		
+   	    //创建htt客户端
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpGet httpGet = new HttpGet(sceneUrl);		
-        HttpResponse response = null;
-        
+		//设置请求方式及连接超时时间							
+		HttpGet httpGet = new HttpGet(sceneUrl);
+		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(2000)
+				.setConnectTimeout(2000)
+				.build();
+		httpGet.setConfig(requestConfig);		
+		
+        HttpResponse response = null;        
        try{
     	   response = httpClient.execute(httpGet);
     	   HttpEntity httpEntity = response.getEntity();
