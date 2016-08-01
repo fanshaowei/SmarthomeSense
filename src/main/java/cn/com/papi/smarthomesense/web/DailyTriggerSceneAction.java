@@ -3,6 +3,7 @@ package cn.com.papi.smarthomesense.web;
 import java.io.IOException;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
@@ -18,9 +19,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import cn.com.papi.smarthomesense.enums.SenseDeviceContorlUrl;
 import cn.com.papi.smarthomesense.service.IRedisUtilService;
+import cn.com.papi.smarthomesense.utils.CommonUtils;
 
 /**
  * 
@@ -35,10 +38,9 @@ public class DailyTriggerSceneAction {
 	IRedisUtilService redisUtilService;
 	
 	@RequestMapping(value="dailyTriggerScene",method=RequestMethod.GET)
-	public JSONObject dailyTriggerScene(@RequestParam("idScene") String idScene, @RequestParam("username") String username){
-		logger.info("---------------定时控制情景-----------------------");
-		
-		JSONObject jsonObject = null;
+	public void dailyTriggerScene(@RequestParam("idScene") String idScene, @RequestParam("username") String username,
+			HttpServletResponse res){
+		logger.info("---------------SmarthomeSense定时控制情景-----------------------");
 		
 		String reqToken = redisUtilService.GetToken(username); 
 				
@@ -46,32 +48,31 @@ public class DailyTriggerSceneAction {
    	    sceneUrl = sceneUrl.replace(":username", username)
 	       .replace(":reqToken", reqToken)
 	       .replace(":idScene", idScene);	
+		System.out.println(sceneUrl);
 		
    	    //创建htt客户端
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		//设置请求方式及连接超时时间							
 		HttpGet httpGet = new HttpGet(sceneUrl);
-		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(2000)
-				.setConnectTimeout(2000)
+		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000)
+				.setConnectTimeout(3000)
 				.build();
 		httpGet.setConfig(requestConfig);		
 		
         HttpResponse response = null;        
        try{
+    	   System.out.println("----------SmarthomeSense调用情景控制接口----------------------------");
     	   response = httpClient.execute(httpGet);
     	   HttpEntity httpEntity = response.getEntity();
     	   if(httpEntity != null){
     		   String entityString = EntityUtils.toString(httpEntity);
-    		   System.out.print("--------------------------------------");
-    		   System.out.print(entityString);
-    		   System.out.print("--------------------------------------");
+    		   System.out.println("----------SmarthomeSense调用情景控制接口 返回信息----------------------------");
+    		   System.out.println(entityString);    		   
     		   
-    		   jsonObject = JSONObject.fromObject(entityString);
+    		   CommonUtils.write(entityString, res);
     	   }    	       	       	   
        }catch(Exception ex){
-    	   System.out.print("--------------------------------------");
-		   System.out.print("定时控制情景失败");
-		   System.out.print("--------------------------------------");
+    	   System.out.println("----------SmarthomeSense调用情景控制接口执行异常----------------------------");
     	   ex.printStackTrace();
        }finally{
     	   try {
@@ -81,7 +82,6 @@ public class DailyTriggerSceneAction {
 			}
        }//end try catch
        
-       return jsonObject;
 	}
 	
 }

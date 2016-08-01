@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletInputStream;
@@ -109,7 +108,8 @@ public class CommonUtils {
 			throws IOException {
 		PrintWriter pw = null;
 		try {
-			pw = response.getWriter();
+			response.setContentType("text/html; charset=UTF-8");
+			pw = response.getWriter();			
 			pw.write(content);
 			pw.flush();
 		} catch (IOException e) {

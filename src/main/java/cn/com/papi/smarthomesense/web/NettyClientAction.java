@@ -367,6 +367,7 @@ public class NettyClientAction extends BaseAction{
 
 					@Override
 					public void onComplete(AsyncEvent arg0) throws IOException {
+						PrintWriter acPrinter = ac.getResponse().getWriter();
 						
 						if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(keyAsyncResp)){							
 							try {
@@ -374,6 +375,16 @@ public class NettyClientAction extends BaseAction{
 								Integer delChannelNum = senseChannelService.deleteByIdDevice(idDevice);
 								//删除数据库数据 设备
 								Integer delDeviceNum = senseDeviceService.deleteByIdDevice(idDevice);
+								
+								if(delDeviceNum>0){
+									String deviceState = CommonUtils.statusBeanToJson(true, "3000", "删除设备成功", null);
+									acPrinter.println(deviceState);
+									acPrinter.flush();
+								}else{
+									String deviceState = CommonUtils.statusBeanToJson(false, "3999", "删除设备失败", null);
+									acPrinter.println(deviceState);
+									acPrinter.flush();
+								}
 							} catch (Exception e) {								
 								e.printStackTrace();
 							}							
@@ -407,7 +418,7 @@ public class NettyClientAction extends BaseAction{
 									ServletHashMap.ASYNC_CONTEXT_DELETE.get(keyAsyncResp);
 							PrintWriter acPrinter = ac.getResponse().getWriter();
 							String deviceState = CommonUtils.statusBeanToJson(false, "7000", "链接超时", null);
-							acPrinter.print(deviceState);
+							acPrinter.println(deviceState);
 							acPrinter.flush();
 							
 							if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(keyAsyncResp)){

@@ -66,8 +66,8 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 		String sceneJson = senseDeviceSceneRelate.getSceneJson();
 	    JSONArray doSceneArray = JSONObject.fromObject(sceneJson).getJSONArray("doScene");
 	    String sceneId = "";//情景id
-	    int delayTime = 0;	//情景延时时间     
-		String username = "13580387033";//用户名
+	    String delayTime = "0";	//情景延时时间     
+		String username = JSONObject.fromObject(sceneJson).getString("username");//用户名
 		String reqToken = redisUtilService.GetToken(username);//token
 		
 		//拼凑请求的相关信息：url，延时
@@ -75,7 +75,10 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 		for(int i=0;i<doSceneArray.size();i++){	 	    	
 	    	 //拼凑请求情景控制的url
 	    	 sceneId = doSceneArray.getJSONObject(i).getString("sceneId");
-	    	 delayTime = doSceneArray.getJSONObject(i).getInt("delayTime");
+	    	 delayTime = doSceneArray.getJSONObject(i).getString("delayTime");
+	    	 if(delayTime==null || delayTime.equals("")){
+	    		 delayTime = "0";
+	    	 }
 	    	 String sceneUrl = SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
 	    	 sceneUrl = sceneUrl.replace(":username", username)
 		       .replace(":reqToken", reqToken)

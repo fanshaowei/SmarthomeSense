@@ -2,6 +2,8 @@ package cn.com.papi.smarthomesense.utils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,5 +56,15 @@ public class BaseAction {
 		response.setContentType("text/plain; charset=UTF-8");
 				
 		write(JSONObject.fromObject(obj).toString(), response);
+	}
+	
+	public Map<String,Object> getReturnMap(boolean status,String message,Object data){
+		Map<String,Object> map = new HashMap<String,Object>();
+        				
+		map.put("status",status);
+		map.put("message", message);
+		map.put("data", data);
+		
+		return map;
 	}
 }
