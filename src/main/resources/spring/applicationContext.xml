@@ -15,7 +15,11 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
 
      
-    <context:property-placeholder location="classpath:jdbc.properties,classpath:redis.properties"/>			
+    <context:property-placeholder location="classpath:jdbc.properties,classpath:redis.properties,classpath:smarthomeSenseConfig.properties"/>			
+	
+	<bean id="smarthomeSenseConfig" class="cn.com.papi.common.bean.SmarthomeSenseConfig">
+	    <property name="smarthomeUrl" value="${Smarthome.url}"></property>
+	</bean>
 	
 	<!--配置数据源  -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">

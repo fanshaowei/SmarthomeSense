@@ -24,6 +24,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import cn.com.papi.common.bean.SmarthomeSenseConfig;
 import cn.com.papi.smarthomesense.bean.SenseDeviceSceneRelate;
 import cn.com.papi.smarthomesense.enums.SenseDeviceContorlUrl;
 import cn.com.papi.smarthomesense.mapper.SenseDeviceSceneRelateMapper;
@@ -38,6 +39,8 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
     SenseDeviceSceneRelateMapper senseDeviceSceneRelateMapper;
     @Resource
 	IRedisUtilService redisUtilService;
+    @Resource
+    SmarthomeSenseConfig smarthomeSenseConfig;
     
     /**
      * 查询记录
@@ -53,6 +56,8 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 	 */
 	@Override
 	public void senseDeviceSceneRelateAction(SenseDeviceSceneRelate senseDeviceSceneRelate){
+		String smarthomeUrl = smarthomeSenseConfig.getSmarthomeUrl();
+		
 		String isValid = senseDeviceSceneRelate.getIsValid(); 
 		//判断执行关联情景是否有效 0：无效 1：有效
 	    if(isValid.equals("0")){
@@ -79,7 +84,7 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 	    	 if(delayTime==null || delayTime.equals("")){
 	    		 delayTime = "0";
 	    	 }
-	    	 String sceneUrl = SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
+	    	 String sceneUrl = smarthomeUrl + SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
 	    	 sceneUrl = sceneUrl.replace(":username", username)
 		       .replace(":reqToken", reqToken)
 		       .replace(":idScene", sceneId);

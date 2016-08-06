@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -19,8 +18,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
+import cn.com.papi.common.bean.SmarthomeSenseConfig;
 import cn.com.papi.smarthomesense.enums.SenseDeviceContorlUrl;
 import cn.com.papi.smarthomesense.service.IRedisUtilService;
 import cn.com.papi.smarthomesense.utils.CommonUtils;
@@ -36,15 +35,19 @@ public class DailyTriggerSceneAction {
 	
 	@Resource
 	IRedisUtilService redisUtilService;
+	@Resource
+	SmarthomeSenseConfig smarthomeSenseConfig;
+	
 	
 	@RequestMapping(value="dailyTriggerScene",method=RequestMethod.GET)
 	public void dailyTriggerScene(@RequestParam("idScene") String idScene, @RequestParam("username") String username,
 			HttpServletResponse res){
 		logger.info("---------------SmarthomeSense定时控制情景-----------------------");
+		String smarthomeUrl = smarthomeSenseConfig.getSmarthomeUrl();
 		
 		String reqToken = redisUtilService.GetToken(username); 
 				
-		String sceneUrl = SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
+		String sceneUrl = smarthomeUrl + SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
    	    sceneUrl = sceneUrl.replace(":username", username)
 	       .replace(":reqToken", reqToken)
 	       .replace(":idScene", idScene);	
