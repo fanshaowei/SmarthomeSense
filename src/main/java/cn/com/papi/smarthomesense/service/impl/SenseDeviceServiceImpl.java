@@ -55,4 +55,21 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
 		return senseDeviceBean;
 	}
 
+	@Override
+	public Integer updateSenseDevice(SenseDeviceBean device) throws Exception {
+			
+		return senseDeviceMapper.update(device);
+	}
+		
+	@Override
+	public boolean isSenseDeviceExit(String idDevice) throws Exception{
+		List<SenseDeviceBean> senseDeviceList = getListByIdDevice(idDevice);
+		if(senseDeviceList != null && senseDeviceList.size() > 0){
+			return true;
+		}
+		
+		return false;
+	}
+	
+
 }

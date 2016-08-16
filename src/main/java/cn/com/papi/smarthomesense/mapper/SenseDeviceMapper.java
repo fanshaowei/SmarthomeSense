@@ -17,4 +17,6 @@ public interface SenseDeviceMapper {
 	public SenseDeviceBean getSenseDeviceByIdDevice(Map<String,Object> params) throws Exception;
 	//删除
 	public Integer delete(Map<String,Object> params) throws Exception;
+	
+	public Integer update(SenseDeviceBean device) throws Exception;
 }

@@ -83,4 +83,24 @@
 	    </where>
 	</select>		
 		
+	<update id="update" parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceBean">
+	    UPDATE sense_device
+	    <set>
+	        <if test="nameDevice != null">
+	        name_device = #{nameDevice},
+	        </if>
+	        <if test="typeDevice != null">
+	        type_device = #{typeDevice}
+	        </if>
+	    </set>	   
+	    WHERE
+		<trim prefixOverrides="and | or">
+			<if test="id != 0">
+				AND id = #{id}
+			</if>
+			<if test="idDevice != null">
+			    AND id_Device = #{idDevice}
+			</if>
+		</trim>
+	</update>	
 </mapper>

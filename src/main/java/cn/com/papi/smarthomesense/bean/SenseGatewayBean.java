@@ -13,10 +13,10 @@ public class SenseGatewayBean implements Serializable {
 	private String idGateway;
 	private int type;
 	private String nameGateway;
-	private int idFamily;
+	private int fid;
 	private String createTime;
-	private int creater;
-	private String creatername;
+	private String creater;
+	private int creator;
 	public int getUuid() {
 		return uuid;
 	}
@@ -41,11 +41,11 @@ public class SenseGatewayBean implements Serializable {
 	public void setNameGateway(String nameGateway) {
 		this.nameGateway = nameGateway;
 	}
-	public int getIdFamily() {
-		return idFamily;
+	public int getFid() {
+		return fid;
 	}
-	public void setIdFamily(int idFamily) {
-		this.idFamily = idFamily;
+	public void setFid(int fid) {
+		this.fid = fid;
 	}
 	public String getCreateTime() {
 		return createTime;
@@ -53,18 +53,18 @@ public class SenseGatewayBean implements Serializable {
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
 	}
-	public int getCreater() {
+	public String getCreater() {
 		return creater;
 	}
-	public void setCreater(int creater) {
+	public void setCreater(String creater) {
 		this.creater = creater;
 	}
-	public String getCreatername() {
-		return creatername;
+	public int getCreator() {
+		return creator;
 	}
-	public void setCreatername(String creatername) {
-		this.creatername = creatername;
+	public void setCreator(int creator) {
+		this.creator = creator;
 	}
-	
-	
+
+    	
 }

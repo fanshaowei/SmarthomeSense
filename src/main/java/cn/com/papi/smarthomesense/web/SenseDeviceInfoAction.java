@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import net.sf.json.JSONObject;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,19 +33,14 @@ public class SenseDeviceInfoAction extends BaseAction{
 	 */
     @RequestMapping(value = "/getSenseDeviceList",method=RequestMethod.GET)//
 	public @ResponseBody Map<String,Object> getSenseDeviceInfo(@RequestParam("idGateway") String idGateway){    
-    	Map<String,Object> mapReturn = new HashMap<String,Object>();
     	List<SenseDeviceBean> senseDeviceBeanList = null;
     	try {
 		    senseDeviceBeanList =  senseDeviceService.getListByIdGateway(idGateway);
 		} catch (Exception e) {			
 			e.printStackTrace();
 		}    	
-        
-    	mapReturn.put("status", "sucess");
-    	mapReturn.put("message", "获取设备数据成功");
-    	mapReturn.put("data", senseDeviceBeanList);
     	
-    	return mapReturn;
+    	return this.getReturnMap(true, "获取设备数据成功", senseDeviceBeanList);
     }
     
     /**
@@ -54,10 +52,46 @@ public class SenseDeviceInfoAction extends BaseAction{
     public @ResponseBody Map<String,Object> getSenseDeviceType(@RequestParam("idDevice") String idDevice){
     	String deviceTypeCode = CommonUtils.subDeviceTypeCode(idDevice);
     	String deviceType = SenseDeviceType.getDeviceTypeName(deviceTypeCode);
+    	
         HashMap<String,String> map = new HashMap<String,String>(); 
-    	map.put("deviceTypeCode",deviceTypeCode);
-    	map.put("deviceType", deviceType);
+        if(deviceType != null && deviceType != ""){
+        	map.put("deviceTypeCode",deviceTypeCode);
+        	map.put("deviceType", deviceType);
+        	
+        	return this.getReturnMap(true, "设备ID输入正确", map);
+        }
             	    	
-    	return this.getReturnMap(true, "设备类型", map);
+    	return this.getReturnMap(false, "设备ID输入错误", null);
+    }
+    
+    
+    /**
+     * 更新智能设备信息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value="/editSenseDeviceInfo",method=RequestMethod.POST)
+    public @ResponseBody Map<String,Object> editSenseDeviceInfo(HttpServletRequest request){
+    	String data = CommonUtils.ReqtoString(request);
+    	JSONObject json = JSONObject.fromObject(data);
+    	
+    	String idDevice = json.getString("idDevice");
+    	String nameDevice = json.getString("nameDevice");
+    	
+    	SenseDeviceBean senseDeviceBean = new SenseDeviceBean();
+    	senseDeviceBean.setIdDevice(idDevice);
+    	senseDeviceBean.setNameDevice(nameDevice);
+    	
+    	try {
+			int num = senseDeviceService.updateSenseDevice(senseDeviceBean);
+			
+			if(num > 0){
+				return this.getReturnMap(true, "更新智能设备信息成功", null);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+    	return this.getReturnMap(false, "更新智能设备信息失败", null);    	
     }
 }

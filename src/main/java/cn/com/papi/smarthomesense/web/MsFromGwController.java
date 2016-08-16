@@ -110,8 +110,8 @@ public class MsFromGwController extends BaseAction{
 		int result_code = jsonData.getInt("result_code");
 		String idGateway =  jsonData.getString("terminal_code");
 		
-		System.out.println("注册设备网关：" + jsonData.getInt("result_code") + "结果：" + result_code);
-		writeTEXT(CommonUtils.statusBeanToJson(true, "7003", "接收注册设备信息成功", null), response);		
+		System.out.println("注册设备网关：" + jsonData.getInt("result_code") + ",结果：" + result_code);
+		writeTEXT(CommonUtils.statusBeanToJson(true, "7003", "接收网关注册设备信息成功", null), response);		
 		
 		if(ServletHashMap.ASYNC_CONTEXT_REGDEV.containsKey(idGateway)){
 			AsyncContext ac = ServletHashMap.ASYNC_CONTEXT_REGDEV.get(idGateway);
@@ -124,8 +124,8 @@ public class MsFromGwController extends BaseAction{
 	 * @param request
 	 * @param response
 	 */
-	@RequestMapping("/gwDeleteDeviceMsg")
-	public void gwDeleteDeviceMsg(HttpServletRequest request,HttpServletResponse response){
+	@RequestMapping("/gwSendDelDoneMsg")
+	public void gwSendDelDoneMsg(HttpServletRequest request,HttpServletResponse response){
 		System.out.println("---------------网关上报设备删除结果--------------------");
 		String data = CommonUtils.ReqtoString(request);
 		data=data.substring(10);
@@ -133,11 +133,11 @@ public class MsFromGwController extends BaseAction{
 		JSONObject jsonData = JSONObject.fromObject(data); 	
 		int result_code = jsonData.getInt("result_code");
 		String idGateway =  jsonData.getString("terminal_code");
-		System.out.println("删除网关设备：" + jsonData.getInt("result_code") + "结果：" + result_code);
+		System.out.println("删除网关设备：" + jsonData.getInt("result_code") + ",结果：" + result_code);
+		writeTEXT(CommonUtils.statusBeanToJson(true, "7004", "接收网关删除设备信息成功", null), response);
 		
-		String keyAsyncResp = "del_"+idGateway;
-		if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(keyAsyncResp)){
-			AsyncContext ac = ServletHashMap.ASYNC_CONTEXT_DELETE.get(keyAsyncResp);
+		if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(idGateway)){
+			AsyncContext ac = ServletHashMap.ASYNC_CONTEXT_DELETE.get(idGateway);
 			ac.complete();
 		}
 	}

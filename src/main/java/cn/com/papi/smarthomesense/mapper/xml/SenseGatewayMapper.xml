@@ -12,57 +12,57 @@
 			jdbcType="VARCHAR" />
 		<result property="type" column="type" javaType="java.lang.Integer"
 			jdbcType="INTEGER" />
-		<result property="idFamily" column="idFamily" javaType="java.lang.Integer"
+		<result property="fid" column="fid" javaType="java.lang.Integer"
 			jdbcType="INTEGER" />
-		<result property="creater" column="creator" javaType="java.lang.Integer"
+		<result property="creator" column="creator" javaType="java.lang.Integer"
 			jdbcType="INTEGER" />	
 	    <result property="createTime" column="createTime" javaType="java.lang.String"
 			jdbcType="VARCHAR" />
-		<result property="creatername" column="creater" javaType="java.lang.String"
+		<result property="creater" column="creater" javaType="java.lang.String"
 			jdbcType="VARCHAR" />	
 	</resultMap>
 	
 	<!-- 添加 -->
 	<insert id="insert" parameterType="cn.com.papi.smarthomesense.bean.SenseGatewayBean">
-		insert into sense_gateway
-		(id,id_gateway,type,idFamily,name_gateway,creator,createTime,creater)
+		insert into gateway
+		(id,id_gateway,type,fid,name_gateway,creator,createTime,creater)
 		values (#{uuid},
 				#{idGateway},
 				#{type},
-				#{idFamily},
+				#{fid},
 				#{nameGateway},
-				#{creater},
+				#{creator},
 				#{createTime},
-				#{creatername})
+				#{creater})
 	</insert>
 	
 	<!-- 查看 -->
 	<select id="listAllSenseGateway" resultMap="rs_SenseGatewayBean">
-		SELECT * FROM sense_gateway
+		SELECT * FROM gateway
 	</select>
 	
 	<select id="listSenseGatewayByParams" resultMap="rs_SenseGatewayBean"
 		parameterType="java.util.Map">
-		SELECT * FROM sense_gateway
+		SELECT * FROM gateway
 		<trim prefix="where" prefixOverrides="and | or">
 			<if test="null != idGateway">
 				AND id_gateway=#{idGateway}
 			</if>
-			<if test="null != uuid">
+			<if test="null != uuid and uuid != 0">
 				AND id=#{uuid}
 			</if>
 			<if test="null != type">
 				AND type=#{type}
 			</if>
-			<if test="null != idFamily">
-				AND idFamily=#{idFamily}
+			<if test="null != fid">
+				AND fid=#{fid}
 			</if>
 		</trim>
 	</select>
 	
 	<select id="getSenseGatewayByID" resultMap="rs_SenseGatewayBean"
 		parameterType="java.util.Map">
-		SELECT * FROM sense_gateway
+		SELECT * FROM gateway
 		<trim prefix="where" prefixOverrides="and | or">
 			<if test="null != uuid">
 				AND id=#{uuid}
@@ -74,7 +74,7 @@
 
 	<!-- 修改 -->
 	<update id="update" parameterType="cn.com.papi.smarthomesense.bean.SenseGatewayBean">
-		update sense_gateway
+		update gateway
 		<set>
 			<if test="nameGateway != null">
 				name_gateway = #{nameGateway},
@@ -85,8 +85,8 @@
 			<if test="type != null">
 				type = #{type},
 			</if>
-			<if test="idFamily != null">
-				idFamily = #{idFamily},
+			<if test="fid != null">
+				fid = #{fid},
 			</if>
 		</set>
 		WHERE
