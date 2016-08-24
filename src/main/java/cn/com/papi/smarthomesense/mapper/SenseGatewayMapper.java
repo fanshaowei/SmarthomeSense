@@ -15,4 +15,6 @@ public interface SenseGatewayMapper {
     public SenseGatewayBean getSenseGatewayByID(Map params);
     
     public Integer update(SenseGatewayBean device);
+    
+    public List<SenseGatewayBean> getGatewayFamily(Map<String,String> params);
 }

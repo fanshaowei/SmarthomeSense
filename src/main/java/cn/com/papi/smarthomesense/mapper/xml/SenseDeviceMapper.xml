@@ -7,6 +7,8 @@
 			jdbcType="INTEGER" />
 		<result property="idGateway" column="id_gateway" javaType="java.lang.String"
 			jdbcType="VARCHAR" />
+		<result property="idFamily" column="id_family" javaType="java.lang.Integer"
+			jdbcType="INTEGER" />	
 		<result property="idDevice" column="id_device" javaType="java.lang.String"
 			jdbcType="VARCHAR" />
 		<result property="typeDevice" column="type_device" javaType="java.lang.String"
@@ -15,21 +17,19 @@
 			jdbcType="VARCHAR" />
 		<result property="isActive" column="is_active" javaType="java.lang.Boolean"
 			jdbcType="BOOLEAN" />
-		<result property="idGroup" column="id_group" javaType="java.lang.Integer"
-			jdbcType="INTEGER" />
 	</resultMap>
 	
 	<!-- 添加 -->
 	<insert id="insert" parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceBean">
 		insert into sense_device
-		(id,id_gateway,id_device,type_device,name_device,is_active,id_group)
-		values (#{id},
+		(id_gateway,id_family,id_device,type_device,name_device,is_active)
+		values (
 				#{idGateway},
+				#{idFamily},
 				#{idDevice},
 				#{typeDevice},
 				#{nameDevice},
-				#{isActive},
-				#{idGroup})
+				#{isActive})
 			
 		<selectKey keyProperty="id" resultType="int" order="AFTER">
 			select LAST_INSERT_ID()
@@ -46,14 +46,14 @@
 			<if test="null != idGateway">
 				AND id_gateway=#{idGateway}
 			</if>
+			<if test="null != idFamily">
+			    AND id_family=#{idFamily}
+			</if>
 			<if test="null != idDevice">
 				AND id_device=#{idDevice}
 			</if>
 			<if test="null != id and 0 != id">
 				AND id=#{id}
-			</if>
-			<if test="null != idGroup">
-				AND id_group=#{idGroup}
 			</if>
 		</trim>
 	</select>
@@ -62,11 +62,14 @@
 	    SELECT * FROM sense_device 
 	    <where>
 	         <if test="idDevice != null ">
-	        id_device=#{idDevice}
+	            id_device=#{idDevice}
 	        </if>
 	        <if test="idGateway != null ">
-	        AND id_gateway = #{idGateway}
+	            AND id_gateway = #{idGateway}
 	        </if>
+	        <if test="null != idFamily">
+			    AND id_family=#{idFamily}
+			</if>
 	    </where>
 	</select>
 	
@@ -80,6 +83,9 @@
 	        <if test="idGateway != null ">
 	        AND id_gateway = #{idGateway}
 	        </if>
+	        <if test="null != idFamily">
+			    AND id_family=#{idFamily}
+			</if>
 	    </where>
 	</select>		
 		

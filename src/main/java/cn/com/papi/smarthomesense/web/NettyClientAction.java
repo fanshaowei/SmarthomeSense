@@ -189,10 +189,18 @@ public class NettyClientAction extends BaseAction{
 										senseDeviceBean.setIdDevice(idDevice);
 										senseDeviceBean.setIdGateway(idGateway);
 										senseDeviceBean.setNameDevice(nameDevice);
-										senseDeviceBean.setIsActive(false);										
-										
+										senseDeviceBean.setIsActive(true);																				
 										String deviceType = SenseDeviceType.getDeviceTypeName(CommonUtils.subDeviceTypeCode(idDevice));	//获取设备类型									
-										senseDeviceBean.setTypeDevice(deviceType);																													
+										senseDeviceBean.setTypeDevice(deviceType);								
+										
+										try {//根据网关id获取家庭id
+											List<SenseGatewayBean> senseGatewayList = isenseGatewayService.getGatewayFamily(idGateway);
+											int idFamily = senseGatewayList.get(0).getFid();
+											senseDeviceBean.setIdFamily(idFamily);
+										} catch (Exception e1) {
+											e1.printStackTrace();
+										}
+										
 										try {
 											int resultAddDev = senseDeviceService.add(senseDeviceBean);//设备入库	
 											
@@ -331,134 +339,132 @@ public class NettyClientAction extends BaseAction{
 			if(senseGateway!=null && senseGateway.isEmpty()){ 
 				/*********网关不存在，则返回网关不存在消息********/
 				writeTEXT(CommonUtils.statusBeanToJson(false, "5997", "网关不存", null), response);				
-			}else{
+			}else{				        	
+				String idDevice = "";//设备id
+				int type = 2; //设备类型字
+				String sendNettyData = null;//发送给网关的数据			
 				
-			}
-        	
-			String idDevice = "";//设备id
-			int type = 2; //设备类型字
-			String sendNettyData = null;//发送给网关的数据			
-			
-			RegDevToGwBean regDevToGwBean = new RegDevToGwBean();	
-			EquipmentListBean equipmentListBean = new EquipmentListBean();
-			List<Equipment> equipmentList = new ArrayList<Equipment>();
-			try {
-				for(int i=0; i<idDeviceArray.size(); i++ ){
-					idDevice = idDeviceArray.getString(i);
-					/********判断要删除的设备是否存在数据库********/
-					boolean isSenseDeviceExit = senseDeviceService.isSenseDeviceExit(idDevice);																	
-					if (isSenseDeviceExit){//设备存在											    
-						Equipment equipment = new Equipment();						
-						equipment.setNumber("1");
-						equipment.setEquipment_code(idDevice);		
+				RegDevToGwBean regDevToGwBean = new RegDevToGwBean();	
+				EquipmentListBean equipmentListBean = new EquipmentListBean();
+				List<Equipment> equipmentList = new ArrayList<Equipment>();
+				try {
+					for(int i=0; i<idDeviceArray.size(); i++ ){
+						idDevice = idDeviceArray.getString(i);
+						/********判断要删除的设备是否存在数据库********/
+						boolean isSenseDeviceExit = senseDeviceService.isSenseDeviceExit(idDevice);																	
+						if (isSenseDeviceExit){//设备存在											    
+							Equipment equipment = new Equipment();						
+							equipment.setNumber("1");
+							equipment.setEquipment_code(idDevice);		
+							
+							equipmentList.add(equipment);						
+						}else{
+							writeTEXT(CommonUtils.statusBeanToJson(true, "3001", "设备记录不存在", null),response);
+							break;
+						}//end if					
+					}//end idDeviceArray for
+					/********判断拼凑的要删除的设备列表是否为空********/
+					if(equipmentList != null && equipmentList.size()>0){
+						equipmentListBean.setEQUIPMENTLIST(equipmentList);					
+						regDevToGwBean.setEquipment_list(equipmentListBean);
+						regDevToGwBean.setTerminal_code(idGateway);
+						regDevToGwBean.setType(type);									
+					
+						Gson gson = new Gson();
+						sendNettyData = gson.toJson(regDevToGwBean);
+						//发送信息到网关删除设备
+						nettyControlDevUtil.NettySendMsg(client, DataPacketTypes.SERVER_TO_GATEWAY_DEL_DIVICE_CTL.getCodeType(), idGateway, sendNettyData);
 						
-						equipmentList.add(equipment);						
-					}else{
-						writeTEXT(CommonUtils.statusBeanToJson(true, "3001", "设备记录不存在", null),response);
-						break;
-					}//end if					
-				}//end idDeviceArray for
-				/********判断拼凑的要删除的设备列表是否为空********/
-				if(equipmentList != null && equipmentList.size()>0){
-					equipmentListBean.setEQUIPMENTLIST(equipmentList);					
-					regDevToGwBean.setEquipment_list(equipmentListBean);
-					regDevToGwBean.setTerminal_code(idGateway);
-					regDevToGwBean.setType(type);									
-				
-					Gson gson = new Gson();
-					sendNettyData = gson.toJson(regDevToGwBean);
-					//发送信息到网关删除设备
-					nettyControlDevUtil.NettySendMsg(client, DataPacketTypes.SERVER_TO_GATEWAY_DEL_DIVICE_CTL.getCodeType(), idGateway, sendNettyData);
-					
-					/*****************启用异步容器*************************************************/
-					response.setContentType("text/html;charset=UTF-8");
-					response.setHeader("Cash-Control", "private");
-					response.setHeader("Pragma", "no-cache");
-					request.setCharacterEncoding("UTF-8");
-					request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED",	 true);
-					final AsyncContext ac = request.startAsync();
-					ac.setTimeout(30 * 1000);
-					new Work(ac).start();
-					
-					final String keyAsyncResp = idGateway;//将网关ID作为传递异步response的键值
-					ServletHashMap.ASYNC_CONTEXT_DELETE.put(keyAsyncResp, ac);
-					ac.addListener(new AsyncListener(){
-
-						@Override
-						public void onComplete(AsyncEvent arg0) throws IOException {
-							PrintWriter acPrinter = ac.getResponse().getWriter();
-							
-							if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(keyAsyncResp)){							
-								try {
-									/********删除数据库数据 设备********/
-									Integer delCnt = 0;
-									for(int i= 0 ;i<idDeviceArray.size(); i++){
-										String idDevice = idDeviceArray.getString(i);										
-										senseDeviceService.deleteByIdDevice(idDevice);
-										delCnt ++;								
-									}
-									
-									if(delCnt == idDeviceArray.size()){
-										String deviceState = CommonUtils.statusBeanToJson(true, "3000", "删除设备记录成功", null);
-										acPrinter.println(deviceState);
-										acPrinter.flush();
-									}else{
-										String deviceState = CommonUtils.statusBeanToJson(false, "3999", "删除设备记录失败", null);
-										acPrinter.println(deviceState);
-										acPrinter.flush();
-									}
-									
-									System.out.print("-------------------异步删除设备数据成功------------------");
-								} catch (Exception e) {								
-									e.printStackTrace();
-								}							
-							}
-							
-							arg0.getSuppliedResponse().getWriter().close();
-							ServletHashMap.ASYNC_CONTEXT_DELETE.remove(keyAsyncResp);
-							if(null==ServletHashMap.ASYNC_CONTEXT_DELETE.get(keyAsyncResp)){
-								System.out.println("该值已经删除，当前存储的删除设备异步请求数：" + ServletHashMap.ASYNC_CONTEXT_DELETE.size());
-							}
-							System.out.println("---------------异步结束---------------------");
-							
-						}
-
-						@Override
-						public void onError(AsyncEvent arg0) throws IOException {
-							System.out.println("------------------删除设备异步错误----------------");						
-						}
-
-						@Override
-						public void onStartAsync(AsyncEvent arg0)
-								throws IOException {
-							System.out.println("-----------------删除设备异步开始----------------");						
-						}
-
-						@Override
-						public void onTimeout(AsyncEvent arg0) throws IOException {
-							System.out.println("超时了");
-							if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(keyAsyncResp)){
-								AsyncContext ac = 
-										ServletHashMap.ASYNC_CONTEXT_DELETE.get(keyAsyncResp);
+						/*****************启用异步容器*************************************************/
+						response.setContentType("text/html;charset=UTF-8");
+						response.setHeader("Cash-Control", "private");
+						response.setHeader("Pragma", "no-cache");
+						request.setCharacterEncoding("UTF-8");
+						request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED",	 true);
+						final AsyncContext ac = request.startAsync();
+						ac.setTimeout(30 * 1000);
+						new Work(ac).start();
+						
+						final String keyAsyncResp = idGateway;//将网关ID作为传递异步response的键值
+						ServletHashMap.ASYNC_CONTEXT_DELETE.put(keyAsyncResp, ac);
+						ac.addListener(new AsyncListener(){
+	
+							@Override
+							public void onComplete(AsyncEvent arg0) throws IOException {
 								PrintWriter acPrinter = ac.getResponse().getWriter();
-								String deviceState = CommonUtils.statusBeanToJson(false, "7000", "链接超时", null);
-								acPrinter.println(deviceState);
-								acPrinter.flush();
 								
-								if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(keyAsyncResp)){
-									ServletHashMap.ASYNC_CONTEXT_DELETE.remove(keyAsyncResp);  //释放异步响应资源
-									if(null==ServletHashMap.ASYNC_CONTEXT_DELETE.get(keyAsyncResp))
-										System.out.println("------------------该值已经删除--------------------");
+								if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(keyAsyncResp)){							
+									try {
+										/********删除数据库数据 设备********/
+										Integer delCnt = 0;
+										for(int i= 0 ;i<idDeviceArray.size(); i++){
+											String idDevice = idDeviceArray.getString(i);										
+											senseDeviceService.deleteByIdDevice(idDevice);
+											delCnt ++;								
+										}
+										
+										if(delCnt == idDeviceArray.size()){
+											String deviceState = CommonUtils.statusBeanToJson(true, "3000", "删除设备记录成功", null);
+											acPrinter.println(deviceState);
+											acPrinter.flush();
+										}else{
+											String deviceState = CommonUtils.statusBeanToJson(false, "3999", "删除设备记录失败", null);
+											acPrinter.println(deviceState);
+											acPrinter.flush();
+										}
+										
+										System.out.print("-------------------异步删除设备数据成功------------------");
+									} catch (Exception e) {								
+										e.printStackTrace();
+									}							
 								}
-							}						
-						}
-						
-					});	
-			 }												
-			} catch (Exception e) {				
-				e.printStackTrace();
-			}//end try
-        }//end if
+								
+								arg0.getSuppliedResponse().getWriter().close();
+								ServletHashMap.ASYNC_CONTEXT_DELETE.remove(keyAsyncResp);
+								if(null==ServletHashMap.ASYNC_CONTEXT_DELETE.get(keyAsyncResp)){
+									System.out.println("该值已经删除，当前存储的删除设备异步请求数：" + ServletHashMap.ASYNC_CONTEXT_DELETE.size());
+								}
+								System.out.println("---------------异步结束---------------------");
+								
+							}
+	
+							@Override
+							public void onError(AsyncEvent arg0) throws IOException {
+								System.out.println("------------------删除设备异步错误----------------");						
+							}
+	
+							@Override
+							public void onStartAsync(AsyncEvent arg0)
+									throws IOException {
+								System.out.println("-----------------删除设备异步开始----------------");						
+							}
+	
+							@Override
+							public void onTimeout(AsyncEvent arg0) throws IOException {
+								System.out.println("超时了");
+								if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(keyAsyncResp)){
+									AsyncContext ac = 
+											ServletHashMap.ASYNC_CONTEXT_DELETE.get(keyAsyncResp);
+									PrintWriter acPrinter = ac.getResponse().getWriter();
+									String deviceState = CommonUtils.statusBeanToJson(false, "7000", "链接超时", null);
+									acPrinter.println(deviceState);
+									acPrinter.flush();
+									
+									if(ServletHashMap.ASYNC_CONTEXT_DELETE.containsKey(keyAsyncResp)){
+										ServletHashMap.ASYNC_CONTEXT_DELETE.remove(keyAsyncResp);  //释放异步响应资源
+										if(null==ServletHashMap.ASYNC_CONTEXT_DELETE.get(keyAsyncResp))
+											System.out.println("------------------该值已经删除--------------------");
+									}
+								}						
+							}
+							
+						});	
+				 }												
+				} catch (Exception e) {				
+					e.printStackTrace();
+				}//end try
+		    }//end if 网关是否在
+        }//end if 用户是否存在
 
 	}//end deleteDevice
 	

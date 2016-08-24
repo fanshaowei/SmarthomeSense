@@ -21,6 +21,12 @@ import cn.com.papi.smarthomesense.service.ISenseDeviceService;
 import cn.com.papi.smarthomesense.utils.BaseAction;
 import cn.com.papi.smarthomesense.utils.CommonUtils;
 
+/**
+ * 
+ * @author fanshaowei
+ *1、用于给 原生app对智能设备的操作 的调用
+ *2、提供h5页面的相应接口
+ */
 @Controller
 public class SenseDeviceInfoAction extends BaseAction{
 	@Resource
@@ -54,7 +60,7 @@ public class SenseDeviceInfoAction extends BaseAction{
     	String deviceType = SenseDeviceType.getDeviceTypeName(deviceTypeCode);
     	
         HashMap<String,String> map = new HashMap<String,String>(); 
-        if(deviceType != null && deviceType != ""){
+        if(deviceType != null && deviceType != "" && !deviceType.equals("末定义设备")){
         	map.put("deviceTypeCode",deviceTypeCode);
         	map.put("deviceType", deviceType);
         	
@@ -93,5 +99,22 @@ public class SenseDeviceInfoAction extends BaseAction{
 		}
     	
     	return this.getReturnMap(false, "更新智能设备信息失败", null);    	
+    }
+    
+    
+    /**
+     * 获取家庭下的设备
+     */
+    @RequestMapping(value="/getFamilySenseDevice",method=RequestMethod.GET)
+    public @ResponseBody Map<String,Object> getFamilySenseDevice(@RequestParam("idFamily") int idFamily){
+    	List<SenseDeviceBean> senseDeviceBeanList = null;
+    	try {
+		    senseDeviceBeanList =  senseDeviceService.getListByIdFamily(idFamily);
+		} catch (Exception e) {			
+			e.printStackTrace();
+		}    	
+    	
+    	return this.getReturnMap(true, "获取设备数据成功", senseDeviceBeanList);
+    	
     }
 }

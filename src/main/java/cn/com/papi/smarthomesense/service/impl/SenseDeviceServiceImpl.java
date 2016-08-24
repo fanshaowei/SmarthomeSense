@@ -33,6 +33,13 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
 	}
 	
 	@Override
+	public List<SenseDeviceBean> getListByIdFamily(int idFamily) throws Exception{
+		Map<String,Object> params = new HashMap<String ,Object>();
+	    params.put("idFamily",idFamily);
+		return senseDeviceMapper.listSenseDeviceByParams(params);
+	}
+	
+	@Override
 	public Integer add(SenseDeviceBean device) throws Exception {				
 		return senseDeviceMapper.insert(device);
 	}

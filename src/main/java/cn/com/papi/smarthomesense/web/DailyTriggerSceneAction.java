@@ -1,13 +1,17 @@
 package cn.com.papi.smarthomesense.web;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
 
+
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -65,17 +69,24 @@ public class DailyTriggerSceneAction {
         HttpResponse response = null;        
        try{
     	   System.out.println("----------SmarthomeSense调用情景控制接口----------------------------");
+    	   logger.info("----------SmarthomeSense调用情景控制接口----------------------------");
     	   response = httpClient.execute(httpGet);
     	   HttpEntity httpEntity = response.getEntity();
     	   if(httpEntity != null){
     		   String entityString = EntityUtils.toString(httpEntity);
     		   System.out.println("----------SmarthomeSense调用情景控制接口 返回信息----------------------------");
+    		   logger.info("----------SmarthomeSense调用情景控制接口 返回信息----------------------------");
     		   System.out.println(entityString);    		   
     		   
     		   CommonUtils.write(entityString, res);
     	   }    	       	       	   
-       }catch(Exception ex){
-    	   System.out.println("----------SmarthomeSense调用情景控制接口执行异常----------------------------");
+       }catch(SocketTimeoutException ex){
+    	   System.out.println("----------SmarthomeSense调用情景控制接口调用超时----------------------------");
+    	   logger.info("----------SmarthomeSense调用情景控制接口调用超时----------------------------");
+    	   ex.printStackTrace();
+       }catch(ClientProtocolException ex){
+    	   ex.printStackTrace();
+       }catch(IOException ex){
     	   ex.printStackTrace();
        }finally{
     	   try {

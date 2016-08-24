@@ -97,4 +97,16 @@
 		</trim>
 	</update>
 	
+	<!-- 根据网关id获取所在家庭 -->
+	<select id="getGatewayFamily" parameterType="java.util.Map" resultMap="rs_SenseGatewayBean">
+	    SELECT 
+	        fid
+	    FROM gateway
+	    <trim prefix="where" prefixOverrides="and | or">
+			<if test="null != idGateway">
+				AND id_gateway = #{idGateway}
+			</if>
+		</trim>
+	</select>
+	
 </mapper>

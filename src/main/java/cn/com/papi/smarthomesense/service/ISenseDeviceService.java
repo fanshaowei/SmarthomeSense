@@ -12,6 +12,8 @@ public interface ISenseDeviceService {
 	
 	public List<SenseDeviceBean> getListByIdGateway(String idGateway) throws Exception;
 	
+	public List<SenseDeviceBean> getListByIdFamily(int idFamily) throws Exception;
+	
 	public SenseDeviceBean getSenseDeviceByIdDevice(String idDevice) throws Exception;
 	
 	//添加 

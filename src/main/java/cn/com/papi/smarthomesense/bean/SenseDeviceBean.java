@@ -11,11 +11,11 @@ public class SenseDeviceBean implements Serializable{
 	
 	private int id;
 	private String idGateway;  //网关表id
+	private int idFamily;
 	private String idDevice;  //设备ID
 	private String nameDevice;//设备名称
 	private String typeDevice;//设备类型
 	private Boolean isActive; //设备是否在线
-	private int idGroup;
 	public int getId() {
 		return id;
 	}
@@ -40,12 +40,6 @@ public class SenseDeviceBean implements Serializable{
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-	public int getIdGroup() {
-		return idGroup;
-	}
-	public void setIdGroup(int idGroup) {
-		this.idGroup = idGroup;
-	}
 	public String getIdGateway() {
 		return idGateway;
 	}
@@ -57,6 +51,12 @@ public class SenseDeviceBean implements Serializable{
 	}
 	public void setIdDevice(String idDevice) {
 		this.idDevice = idDevice;
+	}
+	public int getIdFamily() {
+		return idFamily;
+	}
+	public void setIdFamily(int idFamily) {
+		this.idFamily = idFamily;
 	}
 	
 }

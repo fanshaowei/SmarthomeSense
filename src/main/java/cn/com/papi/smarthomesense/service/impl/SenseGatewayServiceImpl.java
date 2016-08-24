@@ -26,4 +26,13 @@ public class SenseGatewayServiceImpl implements ISenseGatewayService{
 		return senseGatewayMapper.listSenseGatewayByParams(params);
 	}
 
+	@Override
+	public List<SenseGatewayBean> getGatewayFamily(String idGateway)
+			throws Exception {
+	    Map<String,String> params = new HashMap<String,String>();
+	    params.put("idGateway", idGateway);
+		
+		return senseGatewayMapper.getGatewayFamily(params);
+	}
+	
 }
