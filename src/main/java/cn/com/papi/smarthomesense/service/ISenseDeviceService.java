@@ -22,6 +22,10 @@ public interface ISenseDeviceService {
 	//删除
 	public Integer deleteByIdDevice(String idDevice) throws Exception;
 	
+	public Integer deleteByIdGateway(String idGateway) throws Exception;
+	
+	public Integer deleteByIdFamily(int idFamily) throws Exception;
+	
 	//编辑
 	public Integer updateSenseDevice(SenseDeviceBean device) throws Exception;
 	

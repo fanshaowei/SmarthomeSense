@@ -32,7 +32,7 @@ public class SenseDeviceInfoAction extends BaseAction{
 	@Resource
 	ISenseDeviceService senseDeviceService;
 	
-	/**
+	/** app调用
 	 * 根据网关id 查询网关下的设备
 	 * @param idGateway
 	 * @return
@@ -49,7 +49,7 @@ public class SenseDeviceInfoAction extends BaseAction{
     	return this.getReturnMap(true, "获取设备数据成功", senseDeviceBeanList);
     }
     
-    /**
+    /** app调用
      * 根据设备id返设备类型
      * @param idDevice
      * @return
@@ -71,7 +71,7 @@ public class SenseDeviceInfoAction extends BaseAction{
     }
     
     
-    /**
+    /** app调用
      * 更新智能设备信息
      * @param request
      * @return
@@ -101,8 +101,50 @@ public class SenseDeviceInfoAction extends BaseAction{
     	return this.getReturnMap(false, "更新智能设备信息失败", null);    	
     }
     
+    /**
+     * app调用
+     * 删除网关时，把网关下的设备一起删除
+     * @param idGateway
+     * @return
+     */
+    @RequestMapping(value="/delSenseDeviceAsDelGateway",method=RequestMethod.POST)
+    public @ResponseBody Map<String,Object> delSenseDeviceAsDelGateway(HttpServletRequest request){
+    	String data = CommonUtils.ReqtoString(request);
+    	JSONObject json = JSONObject.fromObject(data);
+    	String idGateway = json.getString("idGateway");
+    	try {
+			 senseDeviceService.deleteByIdGateway(idGateway);					
+		} catch (Exception e) {					
+			e.printStackTrace();
+			return this.getReturnMap(false, "删除网关下的智能设备失败", null);
+		}
+    	
+    	return this.getReturnMap(true, "成功删除网关下的智能设备", null);
+    }
     
     /**
+     * app调用
+     * 删除家庭时，把家庭下的设备一起删除
+     * @param idGateway
+     * @return
+     */
+    @RequestMapping(value="/delSenseDeviceAsDelFamily",method=RequestMethod.POST)
+    public @ResponseBody Map<String,Object> delSenseDeviceAsDelFamily(HttpServletRequest request){
+    	String data = CommonUtils.ReqtoString(request);
+    	JSONObject json = JSONObject.fromObject(data);
+    	int idFamily = json.getInt("idFamily");
+    	try {
+			 senseDeviceService.deleteByIdFamily(idFamily);					
+		} catch (Exception e) {					
+			e.printStackTrace();
+			return this.getReturnMap(false, "删除网关下的智能设备失败", null);
+		}
+    	
+    	return this.getReturnMap(true, "成功删除网关下的智能设备", null);
+    }
+    
+    /**
+     * h5调用
      * 获取家庭下的设备
      */
     @RequestMapping(value="/getFamilySenseDevice",method=RequestMethod.GET)

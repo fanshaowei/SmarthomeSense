@@ -95,7 +95,7 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 	    	 requestList.add(map);
 		}
 		
-		//设置请求超时时间3s
+		//设置边接超时时间3s，服务器返回超时为3s
 		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000)
 	    		.setConnectTimeout(3000).build();
 	    //创建一个异步http客户端

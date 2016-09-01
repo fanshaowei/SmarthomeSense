@@ -17,6 +17,9 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
     @Resource
 	SenseDeviceMapper senseDeviceMapper;
 	
+    /**
+     * 根据设备id获取记录
+     */
 	@Override
 	public List<SenseDeviceBean> getListByIdDevice(String idDevice) throws Exception {
 	    Map<String,Object> params = new HashMap<String ,Object>();
@@ -24,6 +27,9 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
 		return senseDeviceMapper.listSenseDeviceByParams(params);
 	}
 	
+	/**
+	 * 根据网关id获取设备记录
+	 */
 	@Override
 	public List<SenseDeviceBean> getListByIdGateway(String idGateway)
 			throws Exception {
@@ -32,6 +38,9 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
 		return senseDeviceMapper.listSenseDeviceByParams(params);
 	}
 	
+	/**
+	 * 根据家庭id获取设备记录
+	 */
 	@Override
 	public List<SenseDeviceBean> getListByIdFamily(int idFamily) throws Exception{
 		Map<String,Object> params = new HashMap<String ,Object>();
@@ -39,19 +48,44 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
 		return senseDeviceMapper.listSenseDeviceByParams(params);
 	}
 	
+	/**
+	 * 添加设备记录
+	 */
 	@Override
 	public Integer add(SenseDeviceBean device) throws Exception {				
 		return senseDeviceMapper.insert(device);
 	}
-
+    
+	/**
+	 * 根据设备id删除记录
+	 */
 	@Override
 	public Integer deleteByIdDevice(String idDevice) throws Exception {
 		Map<String,Object> params = new HashMap<String,Object>();
 		params.put("idDevice", idDevice);		
 		return senseDeviceMapper.delete(params);
 	}
+	
+	/**
+	 * 根据网关id删除设备记录
+	 */
+	@Override
+	public Integer deleteByIdGateway(String idGateway) throws Exception {
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("idGateway", idGateway);		
+		
+		return senseDeviceMapper.delete(params);
+	}
 
-
+	/**
+	 * 根据家庭id删除设备记录
+	 */
+	@Override
+	public Integer deleteByIdFamily(int idFamily) throws Exception {
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("idFamily", idFamily);
+		return senseDeviceMapper.delete(params);
+	}
 
 	@Override
 	public SenseDeviceBean getSenseDeviceByIdDevice(String idDevice)
@@ -62,12 +96,18 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
 		return senseDeviceBean;
 	}
 
+	/**
+	 * 更新设备信息
+	 */
 	@Override
 	public Integer updateSenseDevice(SenseDeviceBean device) throws Exception {
 			
 		return senseDeviceMapper.update(device);
 	}
 		
+	/**
+	 * 判断设备是否存在
+	 */
 	@Override
 	public boolean isSenseDeviceExit(String idDevice) throws Exception{
 		List<SenseDeviceBean> senseDeviceList = getListByIdDevice(idDevice);
