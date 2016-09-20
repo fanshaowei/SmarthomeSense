@@ -34,7 +34,6 @@ import cn.com.papi.smarthomesense.enums.DataPacketTypes;
 import cn.com.papi.smarthomesense.enums.SenseDeviceType;
 import cn.com.papi.smarthomesense.service.INettyControlDevUtil;
 import cn.com.papi.smarthomesense.service.IRedisUtilService;
-import cn.com.papi.smarthomesense.service.ISenseChannelService;
 import cn.com.papi.smarthomesense.service.ISenseDeviceService;
 import cn.com.papi.smarthomesense.service.ISenseGatewayService;
 import cn.com.papi.smarthomesense.service.IUserAuthenticationService;
@@ -64,8 +63,6 @@ public class NettyClientAction extends BaseAction{
 	private ISenseDeviceService senseDeviceService;	
 	@Resource
 	private ISenseGatewayService isenseGatewayService;	
-	@Resource 
-	private ISenseChannelService senseChannelService;
 	@Resource
 	private IUserAuthenticationService userAuthenticationService;
 	
@@ -359,7 +356,7 @@ public class NettyClientAction extends BaseAction{
 							
 							equipmentList.add(equipment);						
 						}else{
-							writeTEXT(CommonUtils.statusBeanToJson(true, "3001", "设备记录不存在", null),response);
+							writeTEXT(CommonUtils.statusBeanToJson(true, "3001", "设备不存在", null),response);
 							break;
 						}//end if					
 					}//end idDeviceArray for
@@ -404,11 +401,11 @@ public class NettyClientAction extends BaseAction{
 										}
 										
 										if(delCnt == idDeviceArray.size()){
-											String deviceState = CommonUtils.statusBeanToJson(true, "3000", "删除设备记录成功", null);
+											String deviceState = CommonUtils.statusBeanToJson(true, "3000", "删除设备成功", null);
 											acPrinter.println(deviceState);
 											acPrinter.flush();
 										}else{
-											String deviceState = CommonUtils.statusBeanToJson(false, "3999", "删除设备记录失败", null);
+											String deviceState = CommonUtils.statusBeanToJson(false, "3999", "删除设备失败", null);
 											acPrinter.println(deviceState);
 											acPrinter.flush();
 										}

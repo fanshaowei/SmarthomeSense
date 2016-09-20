@@ -19,7 +19,6 @@ import cn.com.papi.smarthomesense.bean.SenseDeviceStateLog;
 import cn.com.papi.smarthomesense.enums.SenseDeviceType;
 import cn.com.papi.smarthomesense.enums.SenseDeviceState;
 import cn.com.papi.smarthomesense.service.IRedisUtilService;
-import cn.com.papi.smarthomesense.service.ISenseDeviceSceneLinkService;
 import cn.com.papi.smarthomesense.service.ISenseDeviceSceneRelateService;
 import cn.com.papi.smarthomesense.service.ISenseDeviceStateLogService;
 import cn.com.papi.smarthomesense.utils.BaseAction;
@@ -34,9 +33,7 @@ import cn.com.papi.smarthomesense.utils.DateUtils;
 @Controller
 public class MsFromGwController extends BaseAction{
 	@Resource
-	ISenseDeviceStateLogService senseDeviceStateLogService;	
-	@Resource
-	ISenseDeviceSceneLinkService senseDeviceSceneLinkService;
+	ISenseDeviceStateLogService senseDeviceStateLogService;
 	@Resource
 	ISenseDeviceSceneRelateService senseDeviceSceneRelateService;
 	@Resource
@@ -79,7 +76,7 @@ public class MsFromGwController extends BaseAction{
 	    	    
 	    //查找设备联动情景
 	    SenseDeviceSceneRelate senseDeviceSceneRelate = new SenseDeviceSceneRelate();
-	    //senseDeviceSceneRelate.setIdGateway(idGateway);
+	    senseDeviceSceneRelate.setIdGateway(idGateway);
 	    senseDeviceSceneRelate.setIdDevice(idDevice);	    
 	    List<SenseDeviceSceneRelate> senseDeviceSceneRelateList = 
 	    		senseDeviceSceneRelateService.getListByBean(senseDeviceSceneRelate);

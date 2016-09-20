@@ -61,8 +61,8 @@ public class DailyTriggerSceneAction {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		//设置请求方式及连接超时时间							
 		HttpGet httpGet = new HttpGet(sceneUrl);
-		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000)
-				.setConnectTimeout(3000)
+		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(5000)
+				.setConnectTimeout(5000)
 				.build();
 		httpGet.setConfig(requestConfig);		
 		
@@ -83,7 +83,7 @@ public class DailyTriggerSceneAction {
        }catch(SocketTimeoutException ex){
     	   System.out.println("----------SmarthomeSense调用情景控制接口调用超时----------------------------");
     	   logger.info("----------SmarthomeSense调用情景控制接口调用超时----------------------------");
-    	   ex.printStackTrace();
+    	   //ex.printStackTrace();
        }catch(ClientProtocolException ex){
     	   ex.printStackTrace();
        }catch(IOException ex){
