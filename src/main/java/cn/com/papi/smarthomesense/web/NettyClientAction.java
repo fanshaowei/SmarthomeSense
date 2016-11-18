@@ -120,181 +120,155 @@ public class NettyClientAction extends BaseAction{
 				EquipmentListBean equipmentListBean = new EquipmentListBean();
 				List<Equipment> equipmentList = new ArrayList<Equipment>();				
 				for(EquipmentFromApp qfa : equimentFromAppList){
+					/****************判断设备是否存在******************************/
+					boolean isSenseDeviceExit = senseDeviceService.isSenseDeviceExit(qfa.getEquipment_code());
+					if(isSenseDeviceExit){
+						writeTEXT(CommonUtils.statusBeanToJson(false, "5998", "设备已经存在，无需重复添加", qfa.getEquipment_code()),response);
+						break;
+					}
+					
 					Equipment equipment = new Equipment();
 					equipment.setEquipment_code(qfa.getEquipment_code());
 					equipment.setNumber(qfa.getNum_channel());
 					
 					equipmentList.add(equipment);				
 				}
-				equipmentListBean.setEQUIPMENTLIST(equipmentList);
-				regDevToGwbean.setEquipment_list(equipmentListBean);
-				regDevToGwbean.setType(2);
-				regDevToGwbean.setTerminal_code(idGateway);								
-				String data = gson.toJson(regDevToGwbean);				 																									
-				//将要注册的设备信息发给nettyServer
-				nettyControlDevUtil.NettySendMsg(client, DataPacketTypes.SERVER_TO_GATEWAY_REG_DEVICE.getCodeType(), idGateway, data);
 				
-				/********启用异步容器，设备在网关注册成功后，再将要添加的设备添加到数据库*********************************/
-				response.setContentType("text/html;charset=UTF-8");
-				response.setHeader("Cash-Control", "private");
-				response.setHeader("Pragma", "no-cache");
-				request.setCharacterEncoding("UTF-8");
-				request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED",	 true);
-				final AsyncContext ac = request.startAsync();
-				ac.setTimeout(30 * 1000);
-				new Work(ac).start();
-				
-				final String keyAsyncResp = idGateway;//将网关ID作为传递异步response的键值
-				ServletHashMap.ASYNC_CONTEXT_REGDEV.put(keyAsyncResp, ac);
-				ac.addListener(new AsyncListener(){
-					@Override
-					public void onComplete(AsyncEvent arg0) throws IOException {
-						if(ServletHashMap.ASYNC_CONTEXT_REGDEV.containsKey(keyAsyncResp)){
-							List<SenseDeviceBean> getSenseDevice = new ArrayList<SenseDeviceBean>();
-							PrintWriter acPrinter = ac.getResponse().getWriter();
-														
-							/********判断网关是否存在********/
-							List<SenseGatewayBean> senseGateway = null;
-							try {
-								senseGateway = isenseGatewayService.getByIdGw(idGateway);
-							} catch (Exception e1) {
-								e1.printStackTrace();
-							}
-							if(senseGateway == null || senseGateway.isEmpty()){ 
-								acPrinter.println(CommonUtils.statusBeanToJson(false, "5997", "该网关不存在", idGateway));						
-								acPrinter.flush();
-							}else{
-								/********判断设备是否存在********/
-								for(EquipmentFromApp equipmentFromApp: equimentFromAppList){
-									String idDevice = equipmentFromApp.getEquipment_code();//设备id
-									String nameDevice = equipmentFromApp.getName_device();//设备名
-									//String idChannel = equipmentFromApp.getNum_channel();//设备通道
-									//String nameChannel = equipmentFromApp.getName_channel();//通道名									
-									try {
-										getSenseDevice = senseDeviceService.getListByIdDevice(idDevice);
-									} catch (Exception e) {
-										e.printStackTrace();
-									}									
-									if(!getSenseDevice.isEmpty()){
-										/********设备已经存在,返回设备存在消息********/																			
-										acPrinter.println(CommonUtils.statusBeanToJson(false, "5998", "设备已经存在，无需重复添加", idDevice));
-										acPrinter.flush();
-										break;
-									}else{
-										/********设备不存在,添加设备到数据库********/										
-										SenseDeviceBean senseDeviceBean = new SenseDeviceBean();
-										senseDeviceBean.setIdDevice(idDevice);
-										senseDeviceBean.setIdGateway(idGateway);
-										senseDeviceBean.setNameDevice(nameDevice);
-										senseDeviceBean.setIsActive(true);																				
-										String deviceType = SenseDeviceType.getDeviceTypeName(CommonUtils.subDeviceTypeCode(idDevice));	//获取设备类型									
-										senseDeviceBean.setTypeDevice(deviceType);								
-										
-										try {//根据网关id获取家庭id
-											List<SenseGatewayBean> senseGatewayList = isenseGatewayService.getGatewayFamily(idGateway);
-											int idFamily = senseGatewayList.get(0).getFid();
-											senseDeviceBean.setIdFamily(idFamily);
-										} catch (Exception e1) {
-											e1.printStackTrace();
-										}
-										
-										try {
-											int resultAddDev = senseDeviceService.add(senseDeviceBean);//设备入库	
+				/****************要注册的设备对象不为空,就向网关推送注册信息******************************/
+				if(equipmentList != null && equipmentList.size() > 0){
+									
+					equipmentListBean.setEQUIPMENTLIST(equipmentList);
+					regDevToGwbean.setEquipment_list(equipmentListBean);
+					regDevToGwbean.setType(2);
+					regDevToGwbean.setTerminal_code(idGateway);								
+					String data = gson.toJson(regDevToGwbean);				 																									
+					//将要注册的设备信息发给nettyServer
+					nettyControlDevUtil.NettySendMsg(client, DataPacketTypes.SERVER_TO_GATEWAY_REG_DEVICE.getCodeType(), idGateway, data);
+					
+					/********启用异步容器，设备在网关注册成功后，再将要添加的设备添加到数据库*********************************/
+					response.setContentType("text/html;charset=UTF-8");
+					response.setHeader("Cash-Control", "private");
+					response.setHeader("Pragma", "no-cache");
+					request.setCharacterEncoding("UTF-8");
+					request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED",	 true);
+					final AsyncContext ac = request.startAsync();
+					ac.setTimeout(30 * 1000);
+					new Work(ac).start();
+					
+					final String keyAsyncResp = idGateway;//将网关ID作为传递异步response的键值
+					ServletHashMap.ASYNC_CONTEXT_REGDEV.put(keyAsyncResp, ac);
+					ac.addListener(new AsyncListener(){
+						@Override
+						public void onComplete(AsyncEvent arg0) throws IOException {
+							if(ServletHashMap.ASYNC_CONTEXT_REGDEV.containsKey(keyAsyncResp)){
+								List<SenseDeviceBean> getSenseDevice = new ArrayList<SenseDeviceBean>();
+								PrintWriter acPrinter = ac.getResponse().getWriter();
+															
+								/********判断网关是否存在********/
+								List<SenseGatewayBean> senseGateway = null;
+								try {
+									senseGateway = isenseGatewayService.getByIdGw(idGateway);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+								if(senseGateway == null || senseGateway.isEmpty()){ 
+									acPrinter.println(CommonUtils.statusBeanToJson(false, "5997", "该网关不存在", idGateway));						
+									acPrinter.flush();
+								}else{
+									/********判断设备是否存在********/
+									for(EquipmentFromApp equipmentFromApp: equimentFromAppList){
+										String idDevice = equipmentFromApp.getEquipment_code();//设备id
+										String nameDevice = equipmentFromApp.getName_device();//设备名
+																
+										/*try {
+											getSenseDevice = senseDeviceService.getListByIdDevice(idDevice);
+										} catch (Exception e) {
+											e.printStackTrace();
+										}									
+										if(!getSenseDevice.isEmpty()){
+											*//********设备已经存在,返回设备存在消息********//*																			
+											acPrinter.println(CommonUtils.statusBeanToJson(false, "5998", "设备已经存在，无需重复添加", idDevice));
+											acPrinter.flush();
+											break;
+										}else{*/
+											/********设备不存在,添加设备到数据库********/										
+											SenseDeviceBean senseDeviceBean = new SenseDeviceBean();
+											senseDeviceBean.setIdDevice(idDevice);
+											senseDeviceBean.setIdGateway(idGateway);
+											senseDeviceBean.setNameDevice(nameDevice);
+											senseDeviceBean.setIsActive(true);																				
+											String deviceType = SenseDeviceType.getDeviceTypeName(CommonUtils.subDeviceTypeCode(idDevice));	//获取设备类型									
+											senseDeviceBean.setTypeDevice(deviceType);								
 											
-											if(resultAddDev>0){
-												acPrinter.println(CommonUtils.statusBeanToJson(true, "0000", "添加设备成功！", senseDeviceBean));
-												acPrinter.flush();
-											}else{
-												acPrinter.println(CommonUtils.statusBeanToJson(true, "5996", "添加设备失败！", senseDeviceBean));
-												acPrinter.flush();
+											try {//根据网关id获取家庭id
+												List<SenseGatewayBean> senseGatewayList = isenseGatewayService.getGatewayFamily(idGateway);
+												int idFamily = senseGatewayList.get(0).getFid();
+												senseDeviceBean.setIdFamily(idFamily);
+											} catch (Exception e1) {
+												e1.printStackTrace();
 											}
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-										
-										//添加通道表
-										/*List<SenseChannelBean> getSenseChannel = null;
-										try {
-											getSenseChannel = senseChannelService.getByDeviceAndChannel(idDevice, idChannel);
-										} catch (Exception e) {
-											e.printStackTrace();
-										}
-										if(getSenseChannel.isEmpty()){
-											SenseChannelBean senseChannelBean = new SenseChannelBean();
-											senseChannelBean.setIdChannel(idChannel);//通道id										
-										    senseChannelBean.setStatus(0);		//通道状态											    
-										    senseChannelBean.setNameChannel(nameChannel);//通道名
-											senseChannelBean.setIdDevice(idDevice);//设备id																												
 											
-											Gson controlJson = new Gson();
-											Map<String,Object> controlMap = new HashMap<String,Object>();
-											controlMap.put("terminal_code", idGateway);
-											controlMap.put("equipment_code", idDevice);										
-											controlMap.put("num", idChannel);
-											controlMap.put("type", 2);
-											controlMap.put("state", 1);
-																			
-											senseChannelBean.setControlJson(controlJson.toJson(controlMap));									
-											//设备通道入库
 											try {
-												@SuppressWarnings("unused")
-												int resultAddChannel = senseChannelService.add(senseChannelBean);
+												int resultAddDev = senseDeviceService.add(senseDeviceBean);//设备入库	
+												
+												if(resultAddDev>0){
+													acPrinter.println(CommonUtils.statusBeanToJson(true, "0000", "添加设备成功！", senseDeviceBean));
+													acPrinter.flush();
+												}else{
+													acPrinter.println(CommonUtils.statusBeanToJson(true, "5996", "添加设备失败！", senseDeviceBean));
+													acPrinter.flush();
+												}
 											} catch (Exception e) {
 												e.printStackTrace();
 											}
-											
-											acPrinter.println(CommonUtils.statusBeanToJson(true, "0000", "添加设备成功！", null));
-											acPrinter.flush();
-										}else{
-											acPrinter.println(CommonUtils.statusBeanToJson(false, "5999", "设通道已经存在，无需重复添加", null));
-											acPrinter.flush();
-										}*/ //添加通道表结束							
-									}//添加设备结束																																			
-							    }//end for
-							}									     						
-							
-							arg0.getSuppliedResponse().getWriter().close();
-							ServletHashMap.ASYNC_CONTEXT_REGDEV.remove(keyAsyncResp);
-							if(null==ServletHashMap.ASYNC_CONTEXT_REGDEV.get(keyAsyncResp)){
-								System.out.println("该值已经删除，当前存储的注册异步请求数：" + ServletHashMap.ASYNC_CONTEXT_REGDEV.size());
-							}
-							System.out.println("异步结束");
-						}						
-					}
-	
-					@Override
-					public void onError(AsyncEvent arg0) throws IOException {
-						System.out.println("异步错误");						
-					}//end onError
-	
-					@Override
-					public void onStartAsync(AsyncEvent arg0)
-							throws IOException {					
-						System.out.println("开始异步");
-					}//end onStartAsync
-	
-					@Override 
-					public void onTimeout(AsyncEvent arg0) throws IOException {						
-						System.out.println("超时了");
-						if(ServletHashMap.ASYNC_CONTEXT_REGDEV.containsKey(keyAsyncResp)){
-							AsyncContext ac = 
-									ServletHashMap.ASYNC_CONTEXT_REGDEV.get(keyAsyncResp);
-							PrintWriter acPrinter = ac.getResponse().getWriter();
-							String deviceState = CommonUtils.statusBeanToJson(false, "7000", "链接超时", null);
-							acPrinter.print(deviceState);
-							acPrinter.flush();
-							
+																										
+										//}//添加设备结束																																			
+								    }//end for
+								}									     						
+								
+								arg0.getSuppliedResponse().getWriter().close();
+								ServletHashMap.ASYNC_CONTEXT_REGDEV.remove(keyAsyncResp);
+								if(null==ServletHashMap.ASYNC_CONTEXT_REGDEV.get(keyAsyncResp)){
+									System.out.println("该值已经删除，当前存储的注册异步请求数：" + ServletHashMap.ASYNC_CONTEXT_REGDEV.size());
+								}
+								System.out.println("异步结束");
+							}						
+						}
+		
+						@Override
+						public void onError(AsyncEvent arg0) throws IOException {
+							System.out.println("异步错误");						
+						}//end onError
+		
+						@Override
+						public void onStartAsync(AsyncEvent arg0)
+								throws IOException {					
+							System.out.println("开始异步");
+						}//end onStartAsync
+		
+						@Override 
+						public void onTimeout(AsyncEvent arg0) throws IOException {						
+							System.out.println("超时了");
 							if(ServletHashMap.ASYNC_CONTEXT_REGDEV.containsKey(keyAsyncResp)){
-								ServletHashMap.ASYNC_CONTEXT_REGDEV.remove(keyAsyncResp);  //释放异步响应资源
-								if(null==ServletHashMap.ASYNC_CONTEXT_REGDEV.get(keyAsyncResp))
-									System.out.println("该值已经删除");
-							}
-						}					
-					}//end onTimeout
-					
-				});	//end async context
-			}
-        }        
+								AsyncContext ac = 
+										ServletHashMap.ASYNC_CONTEXT_REGDEV.get(keyAsyncResp);
+								PrintWriter acPrinter = ac.getResponse().getWriter();
+								String deviceState = CommonUtils.statusBeanToJson(false, "7000", "链接超时", null);
+								acPrinter.print(deviceState);
+								acPrinter.flush();
+								
+								if(ServletHashMap.ASYNC_CONTEXT_REGDEV.containsKey(keyAsyncResp)){
+									ServletHashMap.ASYNC_CONTEXT_REGDEV.remove(keyAsyncResp);  //释放异步响应资源
+									if(null==ServletHashMap.ASYNC_CONTEXT_REGDEV.get(keyAsyncResp))
+										System.out.println("该值已经删除");
+								}
+							}					
+						}//end onTimeout
+						
+					});	//end async context
+				}//注册设备结束
+			}//判断网关是否存在
+        }//判断用户是否合法       
 								
 	}		
  

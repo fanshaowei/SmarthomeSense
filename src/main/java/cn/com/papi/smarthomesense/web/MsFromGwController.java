@@ -73,19 +73,21 @@ public class MsFromGwController extends BaseAction{
 	    senseDeviceStateLog.setTime(time);
 	    senseDeviceStateLogService.add(senseDeviceStateLog);
 	    /****************************/
-	    	    
-	    //查找设备联动情景
-	    SenseDeviceSceneRelate senseDeviceSceneRelate = new SenseDeviceSceneRelate();
-	    senseDeviceSceneRelate.setIdGateway(idGateway);
-	    senseDeviceSceneRelate.setIdDevice(idDevice);	    
-	    List<SenseDeviceSceneRelate> senseDeviceSceneRelateList = 
-	    		senseDeviceSceneRelateService.getListByBean(senseDeviceSceneRelate);
-	    if(senseDeviceSceneRelateList != null && senseDeviceSceneRelateList.size() > 0){
-	    	senseDeviceSceneRelate = senseDeviceSceneRelateList.get(0);
-	    	
-	    	//执行情景关联控制
-		    senseDeviceSceneRelateService.senseDeviceSceneRelateAction(senseDeviceSceneRelate);
-	    }	    	    
+	    //普通报警状态才触发关联任务
+	    if(state==1){
+	    	//查找设备联动情景
+		    SenseDeviceSceneRelate senseDeviceSceneRelate = new SenseDeviceSceneRelate();
+		    senseDeviceSceneRelate.setIdGateway(idGateway);
+		    senseDeviceSceneRelate.setIdDevice(idDevice);	    
+		    List<SenseDeviceSceneRelate> senseDeviceSceneRelateList = 
+		    		senseDeviceSceneRelateService.getListByBean(senseDeviceSceneRelate);
+		    if(senseDeviceSceneRelateList != null && senseDeviceSceneRelateList.size() > 0){
+		    	senseDeviceSceneRelate = senseDeviceSceneRelateList.get(0);
+		    	
+		    	//执行情景关联控制
+			    senseDeviceSceneRelateService.senseDeviceSceneRelateAction(senseDeviceSceneRelate);
+		    }
+	    }	    	    	    	   
 	    	    	   	  	    
 	}
     

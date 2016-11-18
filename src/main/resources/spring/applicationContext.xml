@@ -15,10 +15,16 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
 
      
-    <context:property-placeholder location="classpath:jdbc.properties,classpath:redis.properties,classpath:smarthomeSenseConfig.properties"/>			
+    <context:property-placeholder location="classpath:jdbc.properties,classpath:redis.properties,
+    	classpath:smarthomeSenseConfig.properties,classpath:netty.properties"/>			
 	
-	<bean id="smarthomeSenseConfig" class="cn.com.papi.common.bean.SmarthomeSenseConfig">
+	<bean id="smarthomeSenseConfig" class="cn.com.papi.common.config.SmarthomeSenseConfig">
 	    <property name="smarthomeUrl" value="${Smarthome.url}"></property>
+	</bean>
+	
+	<bean id="nettyConfig" class = "cn.com.papi.common.config.NettyConfig">
+	    <property name="hostServer" value="${nettyServer.host}"></property>
+	    <property name="portServer" value="${nettyServer.port}"></property>
 	</bean>
 	
 	<!--配置数据源  -->

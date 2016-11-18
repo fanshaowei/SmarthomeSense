@@ -1,4 +1,4 @@
-package cn.com.papi.common.bean;
+package cn.com.papi.common.config;
 
 import java.io.Serializable;
 

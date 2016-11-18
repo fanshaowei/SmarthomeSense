@@ -24,7 +24,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import cn.com.papi.common.bean.SmarthomeSenseConfig;
+import cn.com.papi.common.config.SmarthomeSenseConfig;
 import cn.com.papi.smarthomesense.bean.SenseDeviceSceneRelate;
 import cn.com.papi.smarthomesense.enums.SenseDeviceContorlUrl;
 import cn.com.papi.smarthomesense.mapper.SenseDeviceSceneRelateMapper;

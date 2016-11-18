@@ -29,8 +29,8 @@
 	        <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>
 	    </property>
 	    <property name="valueSerializer">
-	    	<bean class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>
-	        <!-- <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"></bean> -->
+	    	<!-- <bean class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>-->
+	         <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"></bean> 
 	    </property>
 	</bean>
  

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import cn.com.papi.common.bean.SmarthomeSenseConfig;
+import cn.com.papi.common.config.SmarthomeSenseConfig;
 import cn.com.papi.smarthomesense.enums.SenseDeviceContorlUrl;
 import cn.com.papi.smarthomesense.service.IRedisUtilService;
 import cn.com.papi.smarthomesense.utils.CommonUtils;
@@ -61,8 +62,8 @@ public class DailyTriggerSceneAction {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		//设置请求方式及连接超时时间							
 		HttpGet httpGet = new HttpGet(sceneUrl);
-		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(5000)
-				.setConnectTimeout(5000)
+		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(60 * 1000)
+				.setConnectTimeout(60 * 1000)
 				.build();
 		httpGet.setConfig(requestConfig);		
 		
