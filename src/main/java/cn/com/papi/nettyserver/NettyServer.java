@@ -55,7 +55,7 @@ public class NettyServer {
                  public void initChannel(SocketChannel ch) throws Exception {
                      ChannelPipeline pipeline = ch.pipeline(); 
                      
-                     pipeline.addLast(new DelimiterBasedFrameDecoder(1024, true, Delimiters.lineDelimiter()));
+                     pipeline.addLast(new DelimiterBasedFrameDecoder(2048, true, Delimiters.lineDelimiter()));
                      pipeline.addLast(new StringDecoder());
                      
                      pipeline.addLast(new NettyServerHandler());

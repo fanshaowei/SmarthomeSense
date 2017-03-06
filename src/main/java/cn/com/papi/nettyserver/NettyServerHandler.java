@@ -34,6 +34,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
+import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
+import org.apache.http.nio.reactor.ConnectingIOReactor;
+import org.apache.http.nio.reactor.IOReactorException;
 import org.apache.http.util.EntityUtils;
 
 import cn.com.papi.smarthomesense.enums.SenseDeviceContorlUrl;
@@ -56,20 +60,21 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 	}
 	
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws UnsupportedEncodingException {        
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws UnsupportedEncodingException, IOReactorException {        
     	final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
     	
     	if(((String)msg).equals("client ready connect to server!")){
     		
-    	}else{
-    	
-	    	JSONObject jsonRead = JSONObject.fromObject(msg);
+    	}else{    	
+	    	final JSONObject jsonRead = JSONObject.fromObject(msg);
 	    	String type = jsonRead.getString("type");
-	    	if(type.equals("test")){
+	    	
+	    	if(type.equals("")){
 	    		System.out.println("----------" + df.format(new Date()) + "接收到任务消息：" + jsonRead.getString("jobName") + "----------");
-	    	}
-	    	    	
-	    	if(type.equals("sceneCtl")){
+	    	}	    	    		    	
+	    	
+	    	if(type.equals("sceneCtl")){//test
+	    		System.out.println("----------" + df.format(new Date()) + "接收到任务消息：" + jsonRead.getString("jobName") + "----------");
 	    		String username = jsonRead.getString("username");
 	    		final String idScene = jsonRead.getString("sceneId");
 	    		String reqToken = jsonRead.getString("reqToken");
@@ -82,7 +87,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 	    			e.printStackTrace();
 	    		}
 	    		    		
-		    	//String testUrl = "http://127.0.0.1:9802/SmarthomeSense/quartzReqTest?jobName="+jobName;	
+		    	//String sceneUrl = "http://127.0.0.1:9802/SmarthomeSense/quartzReqTest?jobName="+jsonRead.getString("jobName");	
 		    	String smarthomeUrl = properties.getProperty("Smarthome.url");
 		    	String sceneUrl = smarthomeUrl + SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
 		   	    sceneUrl = sceneUrl.replace(":username", username)
@@ -92,15 +97,21 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 				final HttpGet httpGet = new HttpGet(sceneUrl);		
 				RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000)
 						.setConnectTimeout(3000)
-						.build();		
-			    CloseableHttpAsyncClient httpClient = HttpAsyncClients.custom()
-			    		.setDefaultRequestConfig(requestConfig).build();
+						.build();	
+				
+				ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor();
+		        PoolingNHttpClientConnectionManager cm = new PoolingNHttpClientConnectionManager(ioReactor);
+		        cm.setMaxTotal(100);
+			    CloseableHttpAsyncClient httpAsyncClient = HttpAsyncClients.custom()
+			    		.setConnectionManager(cm)
+			    		.setDefaultRequestConfig(requestConfig)
+			    		.build();
 				
 				//发送请求
-				try {
-					httpClient.start();
+				//try {
+					httpAsyncClient.start();
 					final CountDownLatch latch = new CountDownLatch(1);
-					httpClient.execute(httpGet, new FutureCallback<HttpResponse>(){
+					httpAsyncClient.execute(httpGet, new FutureCallback<HttpResponse>(){
 						@Override
 						public void completed(HttpResponse result) {
 							latch.countDown();
@@ -109,6 +120,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 					    	    String entityString = null;
 								try {
 									entityString = EntityUtils.toString(httpEntity);
+									//System.out.println("-----情景控制"+ jsonRead.getString("jobName") +"任务完成返回时间:" + df.format(new Date()) + ",响应内容:" + entityString +"------");
 									System.out.println("-----情景控制"+ idScene +"任务完成返回时间:" + df.format(new Date()) + ",响应内容:" + entityString +"------");
 								} catch (ParseException e) {
 									e.printStackTrace();
@@ -121,13 +133,13 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 						@Override
 						public void failed(Exception ex) {
 							latch.countDown();
-							System.out.println("---------------任务:" + idScene +" 失败----------");
+							System.out.println("---------------任务:" + jsonRead.getString("jobName") +" 失败----------");
 						}
 		
 						@Override
 						public void cancelled() {
 							latch.countDown();
-							System.out.println("---------------任务:" + idScene +" 被取消");
+							System.out.println("---------------任务:" + jsonRead.getString("jobName") +" 被取消");
 						}
 						
 					});
@@ -135,17 +147,18 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 						latch.await();
 					} catch (InterruptedException e) {
 						e.printStackTrace();
-					}	
-				}finally{
+					}
+					
 					try {
-						httpClient.close();
+						httpAsyncClient.close();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-				}
-	    	}
-    	}	
-    }
+						
+			}//end if
+	    }
+    }	
+    
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {

@@ -166,9 +166,11 @@
 	    <artifactId>httpasyncclient</artifactId>
 	    <version>4.1.1</version>
 	</dependency>		
-	
+		
   </dependencies>
   
+  
+    
     
   <build>
     <finalName>SmarthomeSense</finalName>
