@@ -60,10 +60,8 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 		
 		String isValid = senseDeviceSceneRelate.getIsValid(); 
 		//判断执行关联情景是否有效 0：无效 1：有效
-	    if(isValid.equals("0")){
-	    	System.out.println("-------------------------------------------------------");
-	    	System.out.println("非执行情景关联的有效时间段。。。");
-	    	System.out.println("-------------------------------------------------------");
+	    if(isValid.equals("0")){	    	
+	    	logger.info("------------------非执行情景关联的有效时间段。。。------------------");
 	    	
 	    	return;
 	    }
@@ -123,36 +121,30 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
     				@Override
     				public void completed(HttpResponse response) {
     					latch.countDown();
-    					
-    					System.out.println("-------------------------------------------------------");
-    					System.out.println(httpGet.getRequestLine() + "->" + response.getStatusLine());
+    					    					
+    					logger.info("------------------" + httpGet.getRequestLine() + "->" + response.getStatusLine() + "------------------");
     									    					
     					HttpEntity httpEntity = response.getEntity();
     					try {
-    						System.out.println("Response content: " + EntityUtils.toString(httpEntity));    						
+    						logger.info("Response content: " + EntityUtils.toString(httpEntity));    						
     					} catch (ParseException e) {						
     						e.printStackTrace();
     					} catch (IOException e) {					
     						e.printStackTrace();
     					}					
-    					System.out.println("-------------------------------------------------------");
     				}
 
     				@Override
     				public void failed(Exception ex) {					
-    					latch.countDown();
-    					System.out.println("-------------------------------------------------------");
-    					System.out.println("情景关联:" + httpGet +" 失败");
-    					System.out.println(ex.getLocalizedMessage());
-    					System.out.println("-------------------------------------------------------");    					
+    					latch.countDown();    					
+    					logger.info("------------------情景关联:" + httpGet +" 失败------------------");
+    					logger.info(ex.getLocalizedMessage());    					    				
     				}
 
     				@Override
     				public void cancelled() {
-    					latch.countDown();
-    					System.out.println("-------------------------------------------------------");
-    					System.out.println("情景关联:" + httpGet +" 被取消");						
-    					System.out.println("-------------------------------------------------------");    					    				
+    					latch.countDown();    					
+    					logger.info("------------------情景关联:" + httpGet +" 被取消------------------");						    					    					    			
     				}    			
     	    	 });
     	    	    	    	
@@ -162,7 +154,7 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-    	    System.out.println("情景关联 Shutting down");
+    	    logger.info("------------------情景关联 Shutting down------------------");
 	    }finally{
 	    	try {
 				httpclient.close();

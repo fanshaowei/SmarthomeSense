@@ -2,21 +2,18 @@ package cn.com.papi.smarthomesense.service.impl;
 
 import java.io.IOException;
 
-
-
-
-
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.json.JSONObject;
+
 import org.springframework.stereotype.Service;
 
-import net.sf.json.JSONObject;
+import cn.com.papi.common.config.SmarthomeSenseConfig;
 import cn.com.papi.smarthomesense.bean.UserBean;
 import cn.com.papi.smarthomesense.service.IRedisUtilService;
-import cn.com.papi.smarthomesense.service.IUserService;
 import cn.com.papi.smarthomesense.service.IUserAuthenticationService;
+import cn.com.papi.smarthomesense.service.IUserService;
 import cn.com.papi.smarthomesense.utils.CommonUtils;
  
 @Service("userAuthenticationService")
@@ -26,6 +23,8 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
 	private IUserService userService;
 	@Resource
 	private IRedisUtilService redisUtilService;
+	@Resource
+	private SmarthomeSenseConfig smarthomeSenseConfig;	
 	
 	@Override
 	public String userNameTokenAuthentication(HttpServletRequest request, String reqString) {
@@ -34,6 +33,10 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
 		//IRedisUtilService  redisUtilService = (IRedisUtilService) ac.getBean("redisUtilService");
 		
 		String returnStr = null;
+		if("dev".equals(smarthomeSenseConfig.getSmarthomeActive())){
+			return null;
+		}
+		
 		try {			
 			JSONObject json = JSONObject.fromObject(reqString);			
 			String userName = json.getString("username");

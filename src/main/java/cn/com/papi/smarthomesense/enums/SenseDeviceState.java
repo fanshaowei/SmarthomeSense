@@ -5,8 +5,9 @@ public enum SenseDeviceState {
     NORMAL_ALARM("普通报警",1),
     DISMANTLE_ALARM("拆动报警",2),
     UNDERVOLTAGE_ALARM("欠压报警",3),
+    DELEATE_ADVICE("删除设备",4),
     OPERATTE_FAIL("操作失败",254),
-    DEVICE_OFF_LINE("设备离线",255);
+    DEVICE_OFF_LINE("设备离线",255);    
     
     private String name;
     private int code;

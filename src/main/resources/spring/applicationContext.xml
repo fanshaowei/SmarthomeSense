@@ -20,6 +20,7 @@
 	
 	<bean id="smarthomeSenseConfig" class="cn.com.papi.common.config.SmarthomeSenseConfig">
 	    <property name="smarthomeUrl" value="${Smarthome.url}"></property>
+	    <property name="smarthomeActive" value="${Smarthome.active}"></property>
 	</bean>
 	
 	<bean id="nettyConfig" class = "cn.com.papi.common.config.NettyConfig">

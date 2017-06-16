@@ -39,6 +39,7 @@ import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.nio.reactor.ConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 import cn.com.papi.smarthomesense.enums.SenseDeviceContorlUrl;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -52,10 +53,11 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  */
 @Sharable
 public class NettyServerHandler extends ChannelInboundHandlerAdapter {
-
+	private Logger logger = Logger.getLogger(NettyServerHandler.class);
+			
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-	    System.out.println("客户端 ："+ ctx.channel().remoteAddress() + "连接成功");
+		logger.info("客户端 ："+ ctx.channel().remoteAddress() + "连接成功");
 		super.channelActive(ctx);
 	}
 	
@@ -63,21 +65,19 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws UnsupportedEncodingException, IOReactorException {        
     	final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
     	
-    	if(((String)msg).equals("client ready connect to server!")){
-    		
+    	if(((String)msg).equals("QuartzServer_Heartbeat!")){
+    		logger.info("----------------" + (String)msg + "-------------------");
+    	}else if(((String)msg).equals("client ready connect to server!")){
+    		logger.info("----------------" + (String)msg + "-------------------");
     	}else{    	
 	    	final JSONObject jsonRead = JSONObject.fromObject(msg);
-	    	String type = jsonRead.getString("type");
+	    	String type = jsonRead.getString("type");	    	    		    	
 	    	
-	    	if(type.equals("")){
-	    		System.out.println("----------" + df.format(new Date()) + "接收到任务消息：" + jsonRead.getString("jobName") + "----------");
-	    	}	    	    		    	
-	    	
-	    	if(type.equals("sceneCtl")){//test
-	    		System.out.println("----------" + df.format(new Date()) + "接收到任务消息：" + jsonRead.getString("jobName") + "----------");
+	    	if(type.equals("sceneCtl")){//test	    		
 	    		String username = jsonRead.getString("username");
 	    		final String idScene = jsonRead.getString("sceneId");
 	    		String reqToken = jsonRead.getString("reqToken");
+	    		final String jobName = jsonRead.getString("jobName");
 	    		
 	    		Properties properties = new Properties();
 	    		InputStream inputStream = NettyServerHandler.class.getClassLoader().getResourceAsStream("smarthomeSenseConfig.properties");		
@@ -86,8 +86,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 	    		} catch (IOException e) {
 	    			e.printStackTrace();
 	    		}
-	    		    		
-		    	//String sceneUrl = "http://127.0.0.1:9802/SmarthomeSense/quartzReqTest?jobName="+jsonRead.getString("jobName");	
+	    		    			
 		    	String smarthomeUrl = properties.getProperty("Smarthome.url");
 		    	String sceneUrl = smarthomeUrl + SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
 		   	    sceneUrl = sceneUrl.replace(":username", username)
@@ -107,6 +106,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 			    		.setDefaultRequestConfig(requestConfig)
 			    		.build();
 				
+			    logger.info("-----情景关联控制:"+ jobName +",开始执行时间:" + df.format(new Date()) );
 				//发送请求
 				//try {
 					httpAsyncClient.start();
@@ -120,8 +120,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 					    	    String entityString = null;
 								try {
 									entityString = EntityUtils.toString(httpEntity);
-									//System.out.println("-----情景控制"+ jsonRead.getString("jobName") +"任务完成返回时间:" + df.format(new Date()) + ",响应内容:" + entityString +"------");
-									System.out.println("-----情景控制"+ idScene +"任务完成返回时间:" + df.format(new Date()) + ",响应内容:" + entityString +"------");
+									
+									logger.info("-----情景关联控制:"+ jobName +",任务完成返回时间:" + df.format(new Date()) + ",响应内容:" + entityString +"------");
 								} catch (ParseException e) {
 									e.printStackTrace();
 								} catch (IOException e) {
@@ -133,13 +133,13 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 						@Override
 						public void failed(Exception ex) {
 							latch.countDown();
-							System.out.println("---------------任务:" + jsonRead.getString("jobName") +" 失败----------");
+							System.out.println("---------------情景关联控制:" + jobName +" 失败----------");
 						}
 		
 						@Override
 						public void cancelled() {
 							latch.countDown();
-							System.out.println("---------------任务:" + jsonRead.getString("jobName") +" 被取消");
+							System.out.println("---------------情景关联控制:" + jobName +" 被取消");
 						}
 						
 					});

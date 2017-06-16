@@ -1,18 +1,3 @@
-/*
- * Copyright 2012 The Netty Project
- *
- * The Netty Project licenses this file to you under the Apache License,
- * version 2.0 (the "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
- */
 package cn.com.papi.nettyserver;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -29,15 +14,23 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import java.util.concurrent.TimeUnit;
+
+import org.apache.log4j.Logger;
 
 /**
  * 该nettyServer是用来接收定时服务器的nettyClient发来的定时情景控制信息
  */
 public class NettyServer {
+	private static Logger logger = Logger.getLogger(NettyServer.class.getName());
+	
     static final int PORT = Integer.parseInt(System.getProperty("port", "12138"));
     private static EventLoopGroup bossGroup;
     private static EventLoopGroup workerGroup;
     public static ChannelFuture channelFuture;
+    private final static AcceptorIdleStateTrigger idleStateTrigger = new AcceptorIdleStateTrigger();
     
     public static void initNettyServer(String hostServer,int portServer){        
         // Configure the server.
@@ -54,26 +47,24 @@ public class NettyServer {
                  @Override
                  public void initChannel(SocketChannel ch) throws Exception {
                      ChannelPipeline pipeline = ch.pipeline(); 
-                     
+                     pipeline.addLast(new IdleStateHandler(90, 0, 0, TimeUnit.SECONDS));
+                     pipeline.addLast(idleStateTrigger);
                      pipeline.addLast(new DelimiterBasedFrameDecoder(2048, true, Delimiters.lineDelimiter()));
                      pipeline.addLast(new StringDecoder());
                      
                      pipeline.addLast(new NettyServerHandler());
                  }
              });
-
-			try {
-				// Start the server.
-				channelFuture = b.bind(hostServer, portServer).sync();
-				System.out.println(channelFuture);
+			
+			// Start the server.
+			channelFuture = b.bind(hostServer, portServer).sync();
 				
-				// Wait until the server socket is closed.
-				channelFuture.channel().closeFuture().sync();
-	            
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-            
+			// Wait until the server socket is closed.
+			channelFuture.channel().closeFuture().sync();
+	        
+        }catch(Exception e){
+        	e.printStackTrace();
+        	logger.info("connects to  fails"); 
         } finally {
             // Shut down all event loops to terminate all threads.
             bossGroup.shutdownGracefully();
