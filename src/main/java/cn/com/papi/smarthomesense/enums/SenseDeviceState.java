@@ -2,10 +2,10 @@ package cn.com.papi.smarthomesense.enums;
 
 public enum SenseDeviceState {
     REPORT("设备报到",0),
-    NORMAL_ALARM("普通报警",1),
-    DISMANTLE_ALARM("拆动报警",2),
-    UNDERVOLTAGE_ALARM("欠压报警",3),
-    DELEATE_ADVICE("删除设备",4),
+    NORMAL_ALARM("探测器触发",1),
+    DISMANTLE_ALARM("探测器未触发",2),
+    UNDERVOLTAGE_ALARM("欠压",3),
+    DELEATE_ADVICE("防拆报警",4),
     OPERATTE_FAIL("操作失败",254),
     DEVICE_OFF_LINE("设备离线",255);    
     

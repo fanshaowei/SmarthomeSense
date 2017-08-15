@@ -56,10 +56,35 @@ public class SenseDeviceInfoAction extends BaseAction{
      */
     @RequestMapping(value="/getSenseDeviceType",method=RequestMethod.GET)
     public @ResponseBody Map<String,Object> getSenseDeviceType(@RequestParam("idDevice") String idDevice){
+    	HashMap<String,Object> map = new HashMap<String,Object>();
+    	
     	String deviceTypeCode = CommonUtils.subDeviceTypeCode(idDevice);
     	String deviceType = SenseDeviceType.getDeviceTypeName(deviceTypeCode);
     	
-        HashMap<String,String> map = new HashMap<String,String>(); 
+    	switch (deviceTypeCode) {
+		case "8211"://门磁					 
+			map.put("state", "1");
+			break;	
+			
+		case "0521":case "4521"://温湿度							
+			map.put("temperature", getDeviceJson("120", "-40", "℃", "温度"));
+			map.put("humidity", getDeviceJson("99.9", "0", "%", "湿度"));
+			break;
+		
+		case "0531":case "4531"	://可燃气体
+			map.put("methane", getDeviceJson("1000", "0", "ppm", "甲烷气体浓度"));
+			map.put("carbon_monoxide", getDeviceJson("1000", "0", "ppm", "一氧化碳气体浓度"));
+			break;
+		
+		case "0511"://人体红外
+			map.put("state", "1");
+			map.put("illuminance", getDeviceJson("2000", "3", "LX", "亮度"));
+			break;
+			
+		default:
+			break;
+    	}
+    	
         if(deviceType != null && deviceType != "" && !deviceType.equals("末定义设备")){
         	map.put("deviceTypeCode",deviceTypeCode);
         	map.put("deviceType", deviceType);
@@ -68,6 +93,17 @@ public class SenseDeviceInfoAction extends BaseAction{
         }
             	    	
     	return this.getReturnMap(false, "设备ID输入错误", null);
+    }
+    
+    private JSONObject getDeviceJson(String max,String min,String unit,String name){
+    	JSONObject json = new JSONObject();
+    	
+    	json.accumulate("max", max);
+		json.accumulate("min", min);
+		json.accumulate("unit", unit);
+		json.accumulate("name", name);
+		
+		return json;
     }
     
     

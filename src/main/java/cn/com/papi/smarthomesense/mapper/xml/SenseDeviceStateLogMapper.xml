@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.com.papi.smarthomesense.mapper.SenseDeviceStateLogMapper">
 	<!-- 数据表和实体类的对应 -->
-	<resultMap id="rs_SenseDeviceStateLog" type="cn.com.papi.smarthomesense.bean.SenseDeviceStateLog">
+	<!-- <resultMap id="rs_SenseDeviceStateLog" type="cn.com.papi.smarthomesense.bean.SenseDeviceStateLog">
 		<result property="id" column="id" javaType="java.lang.Integer"
 			jdbcType="INTEGER" />
 		<result property="idGateway" column="id_gateway" javaType="java.lang.String"
@@ -10,24 +10,36 @@
 		<result property="idDevice" column="id_device" javaType="java.lang.String"
 			jdbcType="VARCHAR" />
 		<result property="deviceType" column="device_type" javaType="java.lang.String"
-			jdbcType="VARCHAR" />
-		<result property="stateCode" column="tostateCodeken" javaType="java.lang.Integer"
-			jdbcType="INTEGER" />
-		<result property="stateName" column="stateName" javaType="java.lang.String"
-			jdbcType="VARCHAR" />
+			jdbcType="VARCHAR" />		
 		<result property="time" column="time" javaType="java.util.Date"
 			jdbcType="TIMESTAMP" />
-	</resultMap>
+		<result property="msg" column="stateName" javaType="java.lang.String"
+		jdbcType="VARCHAR" />
+	</resultMap> -->
 		
 	<!-- 添加 -->    
     <insert id="insert" parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceStateLog">
         INSERT INTO sense_device_state_log 
-        (id_gateway,id_device,device_type,stateCode,stateName,time)
+        (id_gateway,id_device,device_type,time,msg)
         values (#{idGateway},
         		#{idDevice},
-        		#{deviceType},
-        		#{stateCode},
-        		#{stateName},
-        		#{time})
+        		#{deviceType},        		
+        		#{time},
+        		#{msg})
     </insert>
+    
+    <select id="list" parameterType="java.util.Map" resultType = "java.util.HashMap">
+	    SELECT 
+	    	log.*, IFNULL(device.name_device,'')as name_device
+	    FROM 
+	    (
+		    SELECT 
+		    	id, id_gateway, id_device, device_type, time,msg
+		    FROM sense_device_state_log 
+			WHERE time BETWEEN str_to_date(CONCAT(#{time},'00:00:00'),'%Y-%m-%d %k:%i:%S') 
+			AND str_to_date(CONCAT(#{time},'23:59:59'),'%Y-%m-%d %k:%i:%S')
+		)AS log LEFT JOIN sense_device AS device
+		 ON log.id_device = device.id_device AND log.id_gateway = device.id_gateway 	    
+    </select>
+    
 </mapper>

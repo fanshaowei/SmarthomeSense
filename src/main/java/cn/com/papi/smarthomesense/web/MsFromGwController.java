@@ -1,8 +1,5 @@
 package cn.com.papi.smarthomesense.web;
 
-import java.util.Date;
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
@@ -14,16 +11,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import cn.com.papi.smarthomesense.bean.SenseDeviceSceneRelate;
-import cn.com.papi.smarthomesense.bean.SenseDeviceStateLog;
-import cn.com.papi.smarthomesense.enums.SenseDeviceType;
-import cn.com.papi.smarthomesense.enums.SenseDeviceState;
+import cn.com.papi.smarthomesense.service.IGatewayMessageService;
 import cn.com.papi.smarthomesense.service.IRedisUtilService;
 import cn.com.papi.smarthomesense.service.ISenseDeviceSceneRelateService;
 import cn.com.papi.smarthomesense.service.ISenseDeviceStateLogService;
 import cn.com.papi.smarthomesense.utils.BaseAction;
 import cn.com.papi.smarthomesense.utils.CommonUtils;
-import cn.com.papi.smarthomesense.utils.DateUtils;
 
 /**
  * 该类是接收网关返回的消息，并处理
@@ -38,6 +31,8 @@ public class MsFromGwController extends BaseAction{
 	ISenseDeviceSceneRelateService senseDeviceSceneRelateService;
 	@Resource
 	IRedisUtilService redisUtilService;
+	@Resource
+    IGatewayMessageService gatewayMessageService;
 	
 	/**
 	 * 报警设备状态发生改变时，调用此接口，上报此设备关状态改变消息
@@ -46,49 +41,11 @@ public class MsFromGwController extends BaseAction{
 	 * @throws Exception
 	 */
     @RequestMapping(value = "/gwSendReceipt",method = RequestMethod.POST)
-	public void gwSendReceipt( HttpServletRequest request, HttpServletResponse response) throws Exception{
-    	//获取网关上报的信息
-    	String data = CommonUtils.ReqtoString(request);
-		data=data.substring(10);
-	    JSONObject jsonData = JSONObject.fromObject(data);
+	public void gwSendReceipt( HttpServletRequest request, HttpServletResponse response) throws Exception{    	
+    	String data = CommonUtils.ReqtoString(request).substring(10);//获取网关上报的信息
 	    
-	    String idGateway = jsonData.getString("terminal_code");
-	    final String idDevice = jsonData.getString("equipment_code");
-	    int type = jsonData.getInt("type");
-	    int state = jsonData.getInt("state");
-	    int idChannel = jsonData.getInt("number");
-	    
-	    /******保存设备改变状态的记录******/
-	    String stateName = SenseDeviceState.getSenseDeviceState(state);//获取设备上报状态名
-	    String deviceType = SenseDeviceType.getDeviceTypeName(CommonUtils.subDeviceTypeCode(idDevice));//获取设备类型	    
-	    //记录上报记录
-	    SenseDeviceStateLog senseDeviceStateLog = new SenseDeviceStateLog();
-	    senseDeviceStateLog.setIdGateway(idGateway);
-	    senseDeviceStateLog.setIdDevice(idDevice);
-	    senseDeviceStateLog.setStateCode(state);
-	    senseDeviceStateLog.setStateName(stateName);
-	    senseDeviceStateLog.setDeviceType(deviceType);
-	    
-	    Date time = DateUtils.dateFormat(new Date(), "yyyy-MM-dd HH:mm:ss");
-	    senseDeviceStateLog.setTime(time);
-	    senseDeviceStateLogService.add(senseDeviceStateLog);
-	    /****************************/
-	    //普通报警状态才触发关联任务
-	    if(state==1){
-	    	//查找设备联动情景
-		    SenseDeviceSceneRelate senseDeviceSceneRelate = new SenseDeviceSceneRelate();
-		    senseDeviceSceneRelate.setIdGateway(idGateway);
-		    senseDeviceSceneRelate.setIdDevice(idDevice);	    
-		    List<SenseDeviceSceneRelate> senseDeviceSceneRelateList = 
-		    		senseDeviceSceneRelateService.getListByBean(senseDeviceSceneRelate);
-		    if(senseDeviceSceneRelateList != null && senseDeviceSceneRelateList.size() > 0){
-		    	senseDeviceSceneRelate = senseDeviceSceneRelateList.get(0);
-		    	
-		    	//执行情景关联控制
-			    senseDeviceSceneRelateService.senseDeviceSceneRelateAction(senseDeviceSceneRelate);
-		    }
-	    }	    	    	    	   
-	    	    	   	  	    
+    	JSONObject jsonData = JSONObject.fromObject(data);
+    	gatewayMessageService.parseSenseDeviceAndAction(jsonData);
 	}
     
     /**

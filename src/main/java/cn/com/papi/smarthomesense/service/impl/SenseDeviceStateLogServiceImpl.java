@@ -1,5 +1,8 @@
 package cn.com.papi.smarthomesense.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
@@ -21,4 +24,9 @@ public class SenseDeviceStateLogServiceImpl implements
 		return senseDeviceStateLogMapper.insert(senseDeviceStateLog);
 	}
 
+	@Override
+	public List<Map<String,Object>> getLogByTime(Map<String, String> paramMap){
+		
+		return senseDeviceStateLogMapper.list(paramMap);
+	}
 }

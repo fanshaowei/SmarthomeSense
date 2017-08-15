@@ -19,4 +19,6 @@ public interface SenseDeviceMapper {
 	public Integer delete(Map<String,Object> params) throws Exception;
 	
 	public Integer update(SenseDeviceBean device) throws Exception;
+	
+	public Integer updatSenseDeviceGatewayId(Map<String, Object> params);
 }

@@ -161,7 +161,7 @@ public class NettyClientAction extends BaseAction{
 						@Override
 						public void onComplete(AsyncEvent arg0) throws IOException {
 							if(ServletHashMap.ASYNC_CONTEXT_REGDEV.containsKey(keyAsyncResp)){
-								List<SenseDeviceBean> getSenseDevice = new ArrayList<SenseDeviceBean>();
+								//List<SenseDeviceBean> getSenseDevice = new ArrayList<SenseDeviceBean>();
 								PrintWriter acPrinter = ac.getResponse().getWriter();
 															
 								/********判断网关是否存在********/
@@ -179,7 +179,7 @@ public class NettyClientAction extends BaseAction{
 									for(EquipmentFromApp equipmentFromApp: equimentFromAppList){
 										String idDevice = equipmentFromApp.getEquipment_code();//设备id
 										String nameDevice = equipmentFromApp.getName_device();//设备名
-																
+										String deviceParam = JSONObject.fromObject(equipmentFromApp.getDeviceParam()).toString();						
 										/*try {
 											getSenseDevice = senseDeviceService.getListByIdDevice(idDevice);
 										} catch (Exception e) {
@@ -199,6 +199,7 @@ public class NettyClientAction extends BaseAction{
 											senseDeviceBean.setIsActive(true);																				
 											String deviceType = SenseDeviceType.getDeviceTypeName(CommonUtils.subDeviceTypeCode(idDevice));	//获取设备类型									
 											senseDeviceBean.setTypeDevice(deviceType);								
+											senseDeviceBean.setDeviceParam(deviceParam);
 											
 											try {//根据网关id获取家庭id
 												List<SenseGatewayBean> senseGatewayList = isenseGatewayService.getGatewayFamily(idGateway);
@@ -309,7 +310,7 @@ public class NettyClientAction extends BaseAction{
 			}
 			if(senseGateway!=null && senseGateway.isEmpty()){ 
 				/*********网关不存在，则返回网关不存在消息********/
-				writeTEXT(CommonUtils.statusBeanToJson(false, "5997", "网关不存", null), response);				
+				writeTEXT(CommonUtils.statusBeanToJson(false, "5997", "网关不存在", null), response);				
 			}else{				        	
 				String idDevice = "";//设备id
 				int type = 2; //设备类型字

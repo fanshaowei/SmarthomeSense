@@ -19,30 +19,28 @@ public class NettyClient {
 	private static String serverIp = null;
 	private static String serverPort = null;
 
-	
-	
 	public String getServerIp() {
 		return serverIp;
 	}
 
-	public void setServerIp(String serverIp) {
+	/*public void setServerIp(String serverIp) {
 		this.serverIp = serverIp;
-	}
+	}*/
 
 	public String getServerPort() {
 		return serverPort;
 	}
 
-	public void setServerPort(String serverPort) {
+	/*public void setServerPort(String serverPort) {
 		this.serverPort = serverPort;
-	}
+	}*/
 
 	public NettyClient() {
 	}
 
 	public NettyClient(String ip, String port) {
-		this.serverIp = ip;
-		this.serverPort = port;
+		serverIp = ip;
+		serverPort = port;
 	}
 
 	//检测是否断开连接

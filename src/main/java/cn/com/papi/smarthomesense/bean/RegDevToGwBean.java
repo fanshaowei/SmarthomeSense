@@ -1,7 +1,6 @@
 package cn.com.papi.smarthomesense.bean;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 
 public class RegDevToGwBean implements Serializable{

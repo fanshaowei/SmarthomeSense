@@ -17,20 +17,23 @@
 			jdbcType="VARCHAR" />
 		<result property="isActive" column="is_active" javaType="java.lang.Boolean"
 			jdbcType="BOOLEAN" />
+		<result property="deviceParam" column="deviceParam" javaType="java.lang.String"
+			jdbcType="VARCHAR" />
 	</resultMap>
 	
 	<!-- 添加 -->
 	<insert id="insert" parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceBean">
 		insert into sense_device
-		(id_gateway,id_family,id_device,type_device,name_device,is_active)
+		(id_gateway,id_family,id_device,type_device,name_device,is_active,deviceParam)
 		values (
 				#{idGateway},
 				#{idFamily},
 				#{idDevice},
 				#{typeDevice},
 				#{nameDevice},
-				#{isActive})
-			
+				#{isActive},
+				#{deviceParam}
+		)			
 		<selectKey keyProperty="id" resultType="int" order="AFTER">
 			select LAST_INSERT_ID()
 		</selectKey>
@@ -91,7 +94,7 @@
 		
 	<update id="update" parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceBean">
 	    UPDATE sense_device
-	    <set>
+	    <set>	    	
 	        <if test="nameDevice != null">
 	        name_device = #{nameDevice},
 	        </if>
@@ -108,5 +111,15 @@
 			    AND id_Device = #{idDevice}
 			</if>
 		</trim>
+	</update>
+	
+	<update id="updatSenseDeviceGatewayId" parameterType="java.util.Map">
+		 UPDATE sense_device
+		 <set>
+		 	<if test="idGateway != null">
+	        id_gateway = #{idGateway}
+	        </if>
+		 </set>
+		 WHERE id_gateway = #{oldIdGateway}		 
 	</update>	
 </mapper>

@@ -7,6 +7,7 @@
 		<result property="idFamily" column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
 		<result property="idGateway" column="id_gateway" javaType="java.lang.String" jdbcType="VARCHAR" />
 		<result property="idDevice" column="id_device" javaType="java.lang.String" jdbcType="VARCHAR" />
+		<result property="triggerSourceJson" column="triggerSourceJson" javaType="java.lang.String" jdbcType="VARCHAR" />
 		<result property="sceneJson" column="sceneJson" javaType="java.lang.String" jdbcType="VARCHAR" />
 		<result property="isValid" column="isValid" javaType="java.lang.String" jdbcType="VARCHAR" />	
 	</resultMap>

@@ -16,6 +16,7 @@ public class SenseDeviceBean implements Serializable{
 	private String nameDevice;//设备名称
 	private String typeDevice;//设备类型
 	private Boolean isActive; //设备是否在线
+	private String deviceParam;
 	public int getId() {
 		return id;
 	}
@@ -58,5 +59,10 @@ public class SenseDeviceBean implements Serializable{
 	public void setIdFamily(int idFamily) {
 		this.idFamily = idFamily;
 	}
-	
+	public String getDeviceParam() {
+		return deviceParam;
+	}
+	public void setDeviceParam(String deviceParam) {
+		this.deviceParam = deviceParam;
+	}	
 }

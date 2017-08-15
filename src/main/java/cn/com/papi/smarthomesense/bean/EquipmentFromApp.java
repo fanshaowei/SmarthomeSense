@@ -1,6 +1,7 @@
 package cn.com.papi.smarthomesense.bean;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class EquipmentFromApp implements Serializable{
 	private static final long serialVersionUID = -4839782019713247292L;
@@ -9,6 +10,8 @@ public class EquipmentFromApp implements Serializable{
 	public String name_device;
 	public String num_channel;
 	public String name_channel;
+	public Map<String,Object> deviceParam;
+	
 	public String getEquipment_code() {
 		return equipment_code;
 	}
@@ -33,4 +36,11 @@ public class EquipmentFromApp implements Serializable{
 	public void setName_channel(String name_channel) {
 		this.name_channel = name_channel;
 	}
+	public Map<String, Object> getDeviceParam() {
+		return deviceParam;
+	}
+	public void setDeviceParam(Map<String, Object> deviceParam) {
+		this.deviceParam = deviceParam;
+	}
+
 }

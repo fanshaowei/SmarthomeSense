@@ -1,6 +1,7 @@
 package cn.com.papi.smarthomesense.service;
 
 import java.util.List;
+import java.util.Map;
 
 import cn.com.papi.smarthomesense.bean.SenseDeviceBean;
 
@@ -28,6 +29,8 @@ public interface ISenseDeviceService {
 	
 	//编辑
 	public Integer updateSenseDevice(SenseDeviceBean device) throws Exception;
+	
+	public Integer updateSenseDeviceGatewayId(Map<String,Object> params);
 	
 	//根据id判断设备是否存在
 	public boolean isSenseDeviceExit(String idDevice) throws Exception;

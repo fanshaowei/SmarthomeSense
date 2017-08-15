@@ -10,9 +10,9 @@ public interface SenseGatewayMapper {
     
     public List<SenseGatewayBean> listAllSenseGateway();
     
-    public List<SenseGatewayBean> listSenseGatewayByParams(Map params);
+    public List<SenseGatewayBean> listSenseGatewayByParams(Map<String,String> params);
     
-    public SenseGatewayBean getSenseGatewayByID(Map params);
+    public SenseGatewayBean getSenseGatewayByID(Map<String,String> params);
     
     public Integer update(SenseGatewayBean device);
     

@@ -86,7 +86,10 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
 		params.put("idFamily", idFamily);
 		return senseDeviceMapper.delete(params);
 	}
-
+	
+	/**
+	 * 根据设备id获取设备相关信息
+	 */
 	@Override
 	public SenseDeviceBean getSenseDeviceByIdDevice(String idDevice)
 			throws Exception {
@@ -104,6 +107,15 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
 			
 		return senseDeviceMapper.update(device);
 	}
+	
+	/**
+	 * 更新设备的网关id
+	 */
+	@Override
+	public Integer updateSenseDeviceGatewayId(Map<String,Object> params) {
+		senseDeviceMapper.updatSenseDeviceGatewayId(params);
+		return null;
+	}
 		
 	/**
 	 * 判断设备是否存在
@@ -117,6 +129,4 @@ public class SenseDeviceServiceImpl implements ISenseDeviceService {
 		
 		return false;
 	}
-	
-
 }

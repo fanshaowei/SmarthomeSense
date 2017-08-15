@@ -33,6 +33,7 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
 		//IRedisUtilService  redisUtilService = (IRedisUtilService) ac.getBean("redisUtilService");
 		
 		String returnStr = null;
+		//dev为调试状态
 		if("dev".equals(smarthomeSenseConfig.getSmarthomeActive())){
 			return null;
 		}

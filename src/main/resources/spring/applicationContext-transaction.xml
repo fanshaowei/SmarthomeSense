@@ -41,8 +41,7 @@
 		</tx:attributes>
 	</tx:advice>
 	<!-- aop -->
-	<aop:config>
-		<!-- <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.anjubao.framework.service.impl.*.*(..))"/>  execution(* *..*Service.*(..))-->
+	<aop:config>		
 		<aop:advisor advice-ref="txAdvice" pointcut="execution(* cn.com.papi.*.service.impl.*.*(..))"/>
 	</aop:config>
 </beans>

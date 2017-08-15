@@ -3,19 +3,20 @@ package cn.com.papi.smarthomesense.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-//智能设备上报记录表
+/**
+ * 智能设备上报记录表
+ * @author fanshaowei
+ *
+ */
 public class SenseDeviceStateLog implements Serializable {
 	private static final long serialVersionUID = -6765012540105137997L;
 
 	private int id;
 	private String idGateway;
 	private String idDevice;
-	private String deviceType;	
-	private Integer stateCode;
-	private String stateName;
+	private String deviceType;		
 	private Date time;
-	
-	
+	private String msg;	
 	
 	public int getId() {
 		return id;
@@ -35,18 +36,6 @@ public class SenseDeviceStateLog implements Serializable {
 	public void setIdDevice(String idDevice) {
 		this.idDevice = idDevice;
 	}
-	public Integer getStateCode() {
-		return stateCode;
-	}
-	public void setStateCode(Integer stateCode) {
-		this.stateCode = stateCode;
-	}
-	public String getStateName() {
-		return stateName;
-	}
-	public void setStateName(String stateName) {
-		this.stateName = stateName;
-	}
 	public Date getTime() {
 		return time;
 	}
@@ -60,4 +49,11 @@ public class SenseDeviceStateLog implements Serializable {
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
 	}
+	public String getMsg() {
+		return msg;
+	}
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
+	
 }

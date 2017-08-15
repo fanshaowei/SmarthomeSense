@@ -3,8 +3,6 @@ package cn.com.papi.smarthomesense.web;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
@@ -23,7 +21,6 @@ import cn.com.papi.NettyClient.NettyClient;
 import cn.com.papi.smarthomesense.enums.DataPacketTypes;
 import cn.com.papi.smarthomesense.service.INettyControlDevUtil;
 import cn.com.papi.smarthomesense.utils.CommonUtils;
-import cn.com.papi.smarthomesense.utils.DateUtils;
 
 @Controller
 public class GatewayTest {
@@ -75,7 +72,6 @@ public class GatewayTest {
 			public String call() throws Exception {
 				DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
 				System.out.println("------" + thisjobName + "执行请求时间:" + df.format(new Date()) + "------");
-				String str = "------" + thisjobName + "执行请求时间:" + df.format(new Date()) + "------";
 				return "scuess";
 			}			
 		};

@@ -42,7 +42,8 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
     @Resource
     SmarthomeSenseConfig smarthomeSenseConfig;
     
-    /**
+
+	/**
      * 查询记录
      */
 	@Override
