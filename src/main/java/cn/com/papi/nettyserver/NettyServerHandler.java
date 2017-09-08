@@ -108,52 +108,49 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 				
 			    logger.info("-----情景关联控制:"+ jobName +",开始执行时间:" + df.format(new Date()) );
 				//发送请求
-				//try {
-					httpAsyncClient.start();
-					final CountDownLatch latch = new CountDownLatch(1);
-					httpAsyncClient.execute(httpGet, new FutureCallback<HttpResponse>(){
-						@Override
-						public void completed(HttpResponse result) {
-							latch.countDown();
-							HttpEntity httpEntity = result.getEntity();
-							if(httpEntity != null){
-					    	    String entityString = null;
-								try {
-									entityString = EntityUtils.toString(httpEntity);
-									
-									logger.info("-----情景关联控制:"+ jobName +",任务完成返回时间:" + df.format(new Date()) + ",响应内容:" + entityString +"------");
-								} catch (ParseException e) {
-									e.printStackTrace();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}			    	    			    	    	    		   	    		 
-							} 					
-						}//end completed
-		
-						@Override
-						public void failed(Exception ex) {
-							latch.countDown();
-							System.out.println("---------------情景关联控制:" + jobName +" 失败----------");
-						}
-		
-						@Override
-						public void cancelled() {
-							latch.countDown();
-							System.out.println("---------------情景关联控制:" + jobName +" 被取消");
-						}
-						
-					});
-					try {
-						latch.await();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				httpAsyncClient.start();
+				final CountDownLatch latch = new CountDownLatch(1);
+				httpAsyncClient.execute(httpGet, new FutureCallback<HttpResponse>(){
+					@Override
+					public void completed(HttpResponse result) {
+						latch.countDown();
+						HttpEntity httpEntity = result.getEntity();
+						if(httpEntity != null){
+				    	    String entityString = null;
+							try {
+								entityString = EntityUtils.toString(httpEntity);									
+								logger.info("-----情景关联控制:"+ jobName +",任务完成返回时间:" + df.format(new Date()) + ",响应内容:" + entityString +"------");
+							} catch (Exception e) {
+								e.printStackTrace();
+							}			    	    			    	    	    		   	    		 
+						} 					
+					}//end completed
+	
+					@Override
+					public void failed(Exception ex) {
+						latch.countDown();
+						System.out.println("---------------情景关联控制:" + jobName +" 失败----------");
+					}
+	
+					@Override
+					public void cancelled() {
+						latch.countDown();
+						System.out.println("---------------情景关联控制:" + jobName +" 被取消");
 					}
 					
-					try {
-						httpAsyncClient.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+				});
+				
+				try {
+					latch.await();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				try {
+					httpAsyncClient.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 						
 			}//end if
 	    }

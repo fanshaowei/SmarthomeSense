@@ -36,10 +36,11 @@
 		    SELECT 
 		    	id, id_gateway, id_device, device_type, time,msg
 		    FROM sense_device_state_log 
-			WHERE time BETWEEN str_to_date(CONCAT(#{time},'00:00:00'),'%Y-%m-%d %k:%i:%S') 
+			WHERE id_gateway=#{idGateway} AND time BETWEEN str_to_date(CONCAT(#{time},'00:00:00'),'%Y-%m-%d %k:%i:%S') 
 			AND str_to_date(CONCAT(#{time},'23:59:59'),'%Y-%m-%d %k:%i:%S')
 		)AS log LEFT JOIN sense_device AS device
-		 ON log.id_device = device.id_device AND log.id_gateway = device.id_gateway 	    
+		 ON log.id_device = device.id_device AND log.id_gateway = device.id_gateway 	
+		 WHERE name_device!=''   
     </select>
     
 </mapper>

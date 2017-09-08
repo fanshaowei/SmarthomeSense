@@ -35,7 +35,7 @@ public class MsFromGwController extends BaseAction{
     IGatewayMessageService gatewayMessageService;
 	
 	/**
-	 * 报警设备状态发生改变时，调用此接口，上报此设备关状态改变消息
+	 * 报警设备状态发生改变时，调用此接口，上报此设备关状态改变消息,并执行相关的关联情景
 	 * @param request
 	 * @param response
 	 * @throws Exception

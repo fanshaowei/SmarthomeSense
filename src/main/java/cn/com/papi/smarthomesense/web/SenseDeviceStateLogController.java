@@ -21,9 +21,11 @@ public class SenseDeviceStateLogController {
 	@Resource
 	ISenseDeviceStateLogService senseDeviceStateLogService;
 	
-	@RequestMapping(value = "/getLogByTime/{time}", method = RequestMethod.GET)
-	public @ResponseBody List<Map<String,Object>> getLogByTime(@PathVariable("time") String time){
+	@RequestMapping(value = "/getLogByTime/{idGateway}/{time}", method = RequestMethod.GET)
+	public @ResponseBody List<Map<String,Object>> getLogByTime(@PathVariable("idGateway") String idGateway,
+			@PathVariable("time") String time){
 		Map<String,String> paramMap = new HashMap<String,String>();
+		paramMap.put("idGateway",idGateway);
 		paramMap.put("time", time);
 		List<Map<String,Object>> list = senseDeviceStateLogService.getLogByTime(paramMap);
 		
