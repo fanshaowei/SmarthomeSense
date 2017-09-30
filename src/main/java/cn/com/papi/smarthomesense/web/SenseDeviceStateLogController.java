@@ -32,4 +32,30 @@ public class SenseDeviceStateLogController {
 		return list;
 	}
 	
+	@RequestMapping(value = "/getDeviceGroupTopOne/{idGateway}/{time}", method = RequestMethod.GET)
+	public @ResponseBody List<Map<String,Object>> getDeviceGroupTopOne(@PathVariable("idGateway") String idGateway,
+			@PathVariable("time") String time){
+		Map<String,String> paramMap = new HashMap<String,String>();
+		paramMap.put("idGateway",idGateway);
+		paramMap.put("time", time);
+		List<Map<String,Object>> list = senseDeviceStateLogService.getDeviceGroupTopOne(paramMap);
+		
+		return list;
+	}
+	
+	@RequestMapping(value = "/getOneDeviceLimit/{idGateway}/{idDevice}/{time}/{offset}/{rows}", method = RequestMethod.GET)
+	public @ResponseBody List<Map<String,String>> getOneDeviceLimit(@PathVariable("idGateway") String idGateway, 
+			@PathVariable("idDevice") String idDevice, @PathVariable("time") String time, 
+			@PathVariable("offset") String offset, @PathVariable("rows") String rows){
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		paramMap.put("idGateway",idGateway);
+		paramMap.put("idDevice",idDevice);
+		paramMap.put("time", time);
+		paramMap.put("offset", Integer.parseInt(offset));
+		paramMap.put("rows", Integer.parseInt(rows));
+		
+		List<Map<String,String>> list = senseDeviceStateLogService.getOneDeviceLimit(paramMap);
+		
+		return list;
+	}
 }

@@ -34,7 +34,7 @@
 	    FROM 
 	    (
 		    SELECT 
-		    	id, id_gateway, id_device, device_type, time,msg
+		    	id, id_gateway, id_device, device_type, time, msg
 		    FROM sense_device_state_log 
 			WHERE id_gateway=#{idGateway} AND time BETWEEN str_to_date(CONCAT(#{time},'00:00:00'),'%Y-%m-%d %k:%i:%S') 
 			AND str_to_date(CONCAT(#{time},'23:59:59'),'%Y-%m-%d %k:%i:%S')
@@ -43,4 +43,39 @@
 		 WHERE name_device!=''   
     </select>
     
+    <select id="getDeviceGroupTopOne" parameterType="java.util.Map" resultType = "java.util.HashMap">
+    	SELECT 
+			LOG.id_gateway, LOG.id_device, name_device, device_type, msg, date_format(time, '%Y-%m-%d %k:%i:%S') as time 
+		FROM
+		(
+			SELECT 
+			 id_gateway, id_device, device_type, msg, time
+			FROM sense_device_state_log 
+			WHERE id_gateway = #{idGateway} 
+			AND time BETWEEN str_to_date(CONCAT(#{time},'00:00:00'),'%Y-%m-%d %k:%i:%S') 
+			AND str_to_date(CONCAT(#{time},'23:59:59'),'%Y-%m-%d %k:%i:%S')
+			ORDER BY time DESC
+		)AS LOG LEFT JOIN sense_device AS device
+		ON LOG.id_device = device.id_device AND LOG.id_gateway = device.id_gateway 	
+		WHERE name_device != '' 
+		GROUP BY LOG.id_device
+    </select>
+    
+    <select id="getOneDeviceLimit" parameterType="java.util.Map" resultType = "java.util.HashMap">
+    	SELECT 
+	    	LOG.id_gateway, LOG.id_device, D.name_device, LOG.device_type, date_format(LOG.time, '%Y-%m-%d %k:%i:%S') as time, LOG.msg
+	    FROM 
+	    (
+		    SELECT 
+		    	id, id_gateway, id_device, device_type, time, msg
+		    FROM sense_device_state_log 
+			WHERE id_gateway = #{idGateway} AND id_device = #{idDevice}
+			AND time BETWEEN str_to_date(CONCAT(#{time},'00:00:00'),'%Y-%m-%d %k:%i:%S') 
+			AND str_to_date(CONCAT(#{time},'23:59:59'),'%Y-%m-%d %k:%i:%S')
+			ORDER BY TIME DESC
+			LIMIT #{offset}, #{rows}
+		)AS LOG LEFT JOIN sense_device AS D
+		 ON LOG.id_device = D.id_device AND LOG.id_gateway = D.id_gateway 	
+		 WHERE name_device != ''  
+    </select>
 </mapper>

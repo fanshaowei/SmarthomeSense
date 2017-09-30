@@ -106,7 +106,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 			    		.setDefaultRequestConfig(requestConfig)
 			    		.build();
 				
-			    logger.info("-----情景关联控制:"+ jobName +",开始执行时间:" + df.format(new Date()) );
+			    logger.info("-----情景定时控制:"+ jobName +",开始执行时间:" + df.format(new Date()) );
 				//发送请求
 				httpAsyncClient.start();
 				final CountDownLatch latch = new CountDownLatch(1);
@@ -119,7 +119,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 				    	    String entityString = null;
 							try {
 								entityString = EntityUtils.toString(httpEntity);									
-								logger.info("-----情景关联控制:"+ jobName +",任务完成返回时间:" + df.format(new Date()) + ",响应内容:" + entityString +"------");
+								logger.info("-----情景定时控制:"+ jobName +",任务完成返回时间:" + df.format(new Date()) + ",响应内容:" + entityString +"------");
 							} catch (Exception e) {
 								e.printStackTrace();
 							}			    	    			    	    	    		   	    		 
@@ -129,13 +129,13 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 					@Override
 					public void failed(Exception ex) {
 						latch.countDown();
-						System.out.println("---------------情景关联控制:" + jobName +" 失败----------");
+						System.out.println("---------------情景定时控制:" + jobName +" 失败----------");
 					}
 	
 					@Override
 					public void cancelled() {
 						latch.countDown();
-						System.out.println("---------------情景关联控制:" + jobName +" 被取消");
+						System.out.println("---------------情景定时控制:" + jobName +" 被取消");
 					}
 					
 				});

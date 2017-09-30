@@ -9,4 +9,8 @@ public interface ISenseDeviceStateLogService {
    public Integer add(SenseDeviceStateLog senseDeviceStateLog) throws Exception;
    
    public List<Map<String,Object>> getLogByTime(Map<String, String> paramMap);
+   
+   public List<Map<String,Object>> getDeviceGroupTopOne(Map<String, String> paramMap);
+   
+   public List<Map<String,String>> getOneDeviceLimit(Map<String, Object> paramMap);
 }

@@ -29,4 +29,17 @@ public class SenseDeviceStateLogServiceImpl implements
 		
 		return senseDeviceStateLogMapper.list(paramMap);
 	}
+	
+	@Override
+	public List<Map<String, Object>> getDeviceGroupTopOne(
+			Map<String, String> paramMap) {
+		return senseDeviceStateLogMapper.getDeviceGroupTopOne(paramMap);
+	}
+	
+	@Override
+	public List<Map<String, String>> getOneDeviceLimit(
+			Map<String, Object> paramMap) {
+		
+		return senseDeviceStateLogMapper.getOneDeviceLimit(paramMap);
+	}
 }
