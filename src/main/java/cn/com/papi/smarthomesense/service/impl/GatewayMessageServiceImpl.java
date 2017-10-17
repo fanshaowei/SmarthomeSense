@@ -120,20 +120,40 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 		JSONObject triggerSourceJson = new JSONObject();
 		float humidity = 0;
 		float temperature = 0;
+		String humidityCompareSymbols = null;
+		String temperatureCompareSymbols = null;
+		boolean humidityFlag = false; //判断感应器上报的湿度 是否 大于关联情景触发设置的湿度 的标识
+		boolean temperatureFlag = false;//判断感应器上报的温度 是否 大于关联情景触发设置的温度 的标识
+		
 		List<SenseDeviceSceneRelate> senseDeviceSceneRelateList = senseDeviceSceneRelateService.getListByBean(senseDeviceSceneRelateTemp);
 		if(senseDeviceSceneRelateList != null && senseDeviceSceneRelateList.size() > 0){
 	    	for(int i = 0; i<senseDeviceSceneRelateList.size(); i++){
 	    		senseDeviceSceneRelateTemp = senseDeviceSceneRelateList.get(i);
 	    		
 	    		triggerSourceJson = JSONObject.fromObject(senseDeviceSceneRelateTemp.getTriggerSourceJson());
-	    		humidity = Float.parseFloat(triggerSourceJson.getString("humidity"));
+	    		humidity = Float.parseFloat(triggerSourceJson.getString("humidity"));//情景关联设置的触发关联的参数
+	    		humidityCompareSymbols = triggerSourceJson.getString("humidityCompareSymbols");
+
 	    		temperature = Float.parseFloat(triggerSourceJson.getString("temperature"));
+	    		temperatureCompareSymbols = triggerSourceJson.getString("temperatureCompareSymbols");
 	    		
-	    		if(tempHumiditySensor.getHumidity() >= humidity && tempHumiditySensor.getTemperature() >= temperature){
+	    		if(">".equals(humidityCompareSymbols)){
+	    			humidityFlag = tempHumiditySensor.getHumidity() > humidity ? true : false;
+	    		}else if("<".equals(humidityCompareSymbols)){
+	    			humidityFlag = tempHumiditySensor.getHumidity() < humidity ? true : false;
+	    		}
+	    		
+	    		if(">".equals(temperatureCompareSymbols)){
+	    			temperatureFlag = tempHumiditySensor.getTemperature() > temperature ? true : false;
+	    		}else if("<".equals(temperatureCompareSymbols)){
+	    			temperatureFlag = tempHumiditySensor.getTemperature() < temperature ? true : false;
+	    		}
+	    			    		
+	    		if(humidityFlag && temperatureFlag){
 	    			senseDeviceSceneRelateService.senseDeviceSceneRelateAction(senseDeviceSceneRelateTemp);//执行情景关联控制
 	    		}	    			    	
 	    	}			    				    				    					    
-	    }
+	    }	
 	}
 	
 	/**
@@ -147,6 +167,11 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 		JSONObject triggerSourceJson = new JSONObject();
 		float carbon_monoxide = 0;
 		float methane = 0;
+		String carbon_monoxideCompareSymbols = null;
+		String methaneCompareSymbols = null;
+		boolean carbon_monoxideFlag = false;
+		boolean methaneFlag = false;
+		
 		List<SenseDeviceSceneRelate> senseDeviceSceneRelateList = senseDeviceSceneRelateService.getListByBean(senseDeviceSceneRelateTemp);
 		if(senseDeviceSceneRelateList != null && senseDeviceSceneRelateList.size() > 0){
 	    	for(int i = 0; i<senseDeviceSceneRelateList.size(); i++){
@@ -154,9 +179,20 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 	    		
 	    		triggerSourceJson = JSONObject.fromObject(senseDeviceSceneRelateTemp.getTriggerSourceJson());
 	    		carbon_monoxide = Float.parseFloat(triggerSourceJson.getString("carbon_monoxide"));
+	    		carbon_monoxideCompareSymbols = triggerSourceJson.getString("carbon_monoxideCompareSymbols");	    		
+	    				
 	    		methane = Float.parseFloat(triggerSourceJson.getString("methane"));
+	    		methaneCompareSymbols = triggerSourceJson.getString("methaneCompareSymbols");
 	    		
-	    		if(combustibleGasSensor.getCarbon_monoxide() >= carbon_monoxide && combustibleGasSensor.getMethane() >= methane){
+	    		if(">".equals(carbon_monoxideCompareSymbols)){
+	    			carbon_monoxideFlag = combustibleGasSensor.getCarbon_monoxide() > carbon_monoxide ? true : false;
+	    		}
+	    		
+	    		if(">".equals(methaneCompareSymbols)){
+	    			methaneFlag = combustibleGasSensor.getMethane() >= methane ? true : false;
+	    		}
+	    		
+	    		if(carbon_monoxideFlag && methaneFlag){
 	    			senseDeviceSceneRelateService.senseDeviceSceneRelateAction(senseDeviceSceneRelateTemp);//执行情景关联控制
 	    		}	    			    	
 	    	}			    				    				    					    
@@ -173,6 +209,9 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 		
 		JSONObject triggerSourceJson = new JSONObject();
 		int illuminance = 0;
+		String illuminanceCompareSymbols = null;
+		boolean illuminanceFlag = false; //判断人亮感应器上报的亮度 是否 大于情景关联触设置的亮度 的标识
+		
 		List<SenseDeviceSceneRelate> senseDeviceSceneRelateList = senseDeviceSceneRelateService.getListByBean(senseDeviceSceneRelateTemp);
 		if(senseDeviceSceneRelateList != null && senseDeviceSceneRelateList.size() > 0){
 	    	for(int i = 0; i<senseDeviceSceneRelateList.size(); i++){
@@ -180,8 +219,15 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 	    		
 	    		triggerSourceJson = JSONObject.fromObject(senseDeviceSceneRelateTemp.getTriggerSourceJson());
 	    		illuminance = triggerSourceJson.getInt("illuminance");
+ 	    		illuminanceCompareSymbols = triggerSourceJson.getString("illuminanceCompareSymbols");
 	    		
-	    		if(infraredSensor.getIlluminance() >= illuminance && infraredSensor.getState() == 1){
+ 	    		if(">".equals(illuminanceCompareSymbols)){
+ 	    			illuminanceFlag = infraredSensor.getIlluminance() > illuminance ? true : false;
+ 	    		}else if("<".equals(illuminanceCompareSymbols)){
+ 	    			illuminanceFlag = infraredSensor.getIlluminance() < illuminance ? true : false;
+ 	    		}
+ 	    		
+	    		if(illuminanceFlag && infraredSensor.getState() == 1){
 	    			senseDeviceSceneRelateService.senseDeviceSceneRelateAction(senseDeviceSceneRelateTemp);//执行情景关联控制
 	    		}	    			    	
 	    	}			    				    				    					    
