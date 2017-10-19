@@ -28,4 +28,19 @@
 		</trim>
 	</select>
 	
+	<delete id="delListByBean" parameterType="cn.com.papi.smarthomesense.bean.SenseDeviceSceneRelate">
+		DELETE FROM sense_device_scene_relate
+		<where>
+			<if test="0 != idFamily">
+		        AND id_family = #{idFamily}
+		    </if>
+			 <if test="null != idGateway">
+		        AND id_gateway = #{idGateway}
+		    </if>
+		    <if test="null != idDevice">
+		        AND id_device = #{idDevice}
+		    </if>
+		</where>
+	</delete>
+	
 </mapper>

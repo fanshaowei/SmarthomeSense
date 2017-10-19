@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 import net.sf.json.JSONObject;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import cn.com.papi.smarthomesense.bean.SenseDeviceSceneRelate;
@@ -30,7 +31,8 @@ import cn.com.papi.smarthomesense.utils.DateUtils;
 
 @Service("gatewayMessageService")
 public class GatewayMessageServiceImpl implements IGatewayMessageService {
-    
+	Logger logger = Logger.getLogger(GatewayMessageServiceImpl.class); 
+			
 	@Resource
 	ISenseDeviceSceneRelateService senseDeviceSceneRelateService;
 	@Resource
@@ -69,8 +71,8 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 			GatewayRespCombustibleGasSensor gatewayRespCombustibleGasSensor = 
 				(GatewayRespCombustibleGasSensor)JSONObject.toBean(senseDeviceJson, GatewayRespCombustibleGasSensor.class);
 			
-			combustibleGasSensorAction(gatewayRespCombustibleGasSensor, senseDeviceSceneRelate);
 			recordSenseDeviceLog(gatewayRespCombustibleGasSensor);
+			combustibleGasSensorAction(gatewayRespCombustibleGasSensor, senseDeviceSceneRelate);					
 			
 			break;
 		

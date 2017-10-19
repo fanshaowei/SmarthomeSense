@@ -89,6 +89,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 	    		    			
 		    	String smarthomeUrl = properties.getProperty("Smarthome.url");
 		    	String sceneUrl = smarthomeUrl + SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
+		    	logger.info(sceneUrl);
 		   	    sceneUrl = sceneUrl.replace(":username", username)
 			       .replace(":reqToken", reqToken)
 			       .replace(":idScene", idScene);

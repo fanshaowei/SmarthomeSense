@@ -19,7 +19,7 @@ public class AcceptorIdleStateTrigger extends ChannelInboundHandlerAdapter{
 		if (evt instanceof IdleStateEvent) {
             IdleState state = ((IdleStateEvent) evt).state();
             if (state == IdleState.READER_IDLE) {
-            	logger.info("-----------read idle exception--------------");
+            	logger.info("SmarthomeSense netty server read idle");
             }
         } else {
             super.userEventTriggered(ctx, evt);

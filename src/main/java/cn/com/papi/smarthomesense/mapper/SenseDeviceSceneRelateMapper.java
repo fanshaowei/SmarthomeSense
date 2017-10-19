@@ -6,4 +6,6 @@ import cn.com.papi.smarthomesense.bean.SenseDeviceSceneRelate;
 
 public interface SenseDeviceSceneRelateMapper {
     public List<SenseDeviceSceneRelate> getListByBean(SenseDeviceSceneRelate senseDeviceSceneRelate);
+    
+    public int delListByBean(SenseDeviceSceneRelate senseDeviceSceneRelate);
 }

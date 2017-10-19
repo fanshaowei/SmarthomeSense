@@ -42,7 +42,6 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
     @Resource
     SmarthomeSenseConfig smarthomeSenseConfig;
     
-
 	/**
      * 查询记录
      */
@@ -50,6 +49,13 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 	public List<SenseDeviceSceneRelate> getListByBean(SenseDeviceSceneRelate senseDeviceSceneRelate) {						
 		
 		return senseDeviceSceneRelateMapper.getListByBean(senseDeviceSceneRelate);
+	}
+	/**
+	 * 删除记录
+	 */
+	@Override
+	public int delListByBean(SenseDeviceSceneRelate senseDeviceSceneRelate) {
+		return senseDeviceSceneRelateMapper.delListByBean(senseDeviceSceneRelate);
 	}
 	
 	/**
@@ -96,7 +102,7 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 		
 		//设置边接超时时间5s，服务器返回超时为5s
 		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(5000)
-	    		.setConnectTimeout(5000).build();
+	    		.setConnectTimeout(20000).build();
 	    //创建一个异步http客户端
 	    final CloseableHttpAsyncClient httpclient = HttpAsyncClients.custom()
 	    		.setDefaultRequestConfig(requestConfig).build();		    
@@ -164,6 +170,6 @@ public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelat
 			}
 	    }
 	    
-	}
+	}	
 
 }
