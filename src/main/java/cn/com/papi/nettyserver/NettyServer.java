@@ -47,7 +47,7 @@ public class NettyServer {
                  @Override
                  public void initChannel(SocketChannel ch) throws Exception {
                      ChannelPipeline pipeline = ch.pipeline(); 
-                     pipeline.addLast(new IdleStateHandler(300, 0, 0, TimeUnit.SECONDS));
+                     pipeline.addLast(new IdleStateHandler(1800, 0, 0, TimeUnit.SECONDS));
                      pipeline.addLast(idleStateTrigger);
                      pipeline.addLast(new DelimiterBasedFrameDecoder(2048, true, Delimiters.lineDelimiter()));
                      pipeline.addLast(new StringDecoder());

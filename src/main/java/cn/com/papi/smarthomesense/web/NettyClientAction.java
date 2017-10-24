@@ -20,8 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.google.gson.Gson;
-
 import cn.com.papi.NettyClient.NettyClient;
 import cn.com.papi.smarthomesense.bean.Equipment;
 import cn.com.papi.smarthomesense.bean.EquipmentFromApp;
@@ -40,6 +38,8 @@ import cn.com.papi.smarthomesense.service.IUserAuthenticationService;
 import cn.com.papi.smarthomesense.service.IUserService;
 import cn.com.papi.smarthomesense.utils.BaseAction;
 import cn.com.papi.smarthomesense.utils.CommonUtils;
+
+import com.google.gson.Gson;
 
 /**
  * 

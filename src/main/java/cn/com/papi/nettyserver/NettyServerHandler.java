@@ -15,6 +15,10 @@
  */
 package cn.com.papi.nettyserver;
 
+import io.netty.channel.ChannelHandler.Sharable;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -28,7 +32,6 @@ import net.sf.json.JSONObject;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.concurrent.FutureCallback;
@@ -42,9 +45,6 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import cn.com.papi.smarthomesense.enums.SenseDeviceContorlUrl;
-import io.netty.channel.ChannelHandler.Sharable;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 
 /**
  * 
@@ -88,15 +88,15 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 	    		}
 	    		    			
 		    	String smarthomeUrl = properties.getProperty("Smarthome.url");
-		    	String sceneUrl = smarthomeUrl + SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 
-		    	logger.info(sceneUrl);
+		    	String sceneUrl = smarthomeUrl + SenseDeviceContorlUrl.SCENE_CONTROL.getUrl(); 		    	
 		   	    sceneUrl = sceneUrl.replace(":username", username)
 			       .replace(":reqToken", reqToken)
 			       .replace(":idScene", idScene);
-		    	
+		   	    logger.info(sceneUrl);
+		   	    
 				final HttpGet httpGet = new HttpGet(sceneUrl);		
-				RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(3000)
-						.setConnectTimeout(3000)
+				RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(15000)
+						.setConnectTimeout(15000)
 						.build();	
 				
 				ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor();
@@ -131,6 +131,7 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 					public void failed(Exception ex) {
 						latch.countDown();
 						System.out.println("---------------情景定时控制:" + jobName +" 失败----------");
+						ex.printStackTrace();
 					}
 	
 					@Override
