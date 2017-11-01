@@ -53,8 +53,8 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 			GatewayRespDoorMagnetic gatewayRespDoorMagnetic = 
 				(GatewayRespDoorMagnetic)JSONObject.toBean(senseDeviceJson, GatewayRespDoorMagnetic.class);
 			
-			doorMagneticAction(gatewayRespDoorMagnetic, senseDeviceSceneRelate);
-			recordSenseDeviceLog(gatewayRespDoorMagnetic);					 
+			recordSenseDeviceLog(gatewayRespDoorMagnetic);
+			doorMagneticAction(gatewayRespDoorMagnetic, senseDeviceSceneRelate);								 
 		    
 			break;	
 			
@@ -62,8 +62,8 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 			GatewayRespTempHumiditySensor gatewayRespTempHumiditySensor = 
 				(GatewayRespTempHumiditySensor)JSONObject.toBean(senseDeviceJson, GatewayRespTempHumiditySensor.class);
 			
-			tempHumiditySensorAction(gatewayRespTempHumiditySensor, senseDeviceSceneRelate);
-			recordSenseDeviceLog(gatewayRespTempHumiditySensor);	
+			recordSenseDeviceLog(gatewayRespTempHumiditySensor);
+			tempHumiditySensorAction(gatewayRespTempHumiditySensor, senseDeviceSceneRelate);			
 			
 			break;
 		
@@ -80,8 +80,8 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 			GatewayRespInfraredSensor gatewayRespInfraredSensor = 
 				(GatewayRespInfraredSensor)JSONObject.toBean(senseDeviceJson, GatewayRespInfraredSensor.class);
 			
-			infraredSensorAction(gatewayRespInfraredSensor, senseDeviceSceneRelate);
 			recordSenseDeviceLog(gatewayRespInfraredSensor);
+			infraredSensorAction(gatewayRespInfraredSensor, senseDeviceSceneRelate);			
 			
 			break;
 			
@@ -151,7 +151,7 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 	    			temperatureFlag = tempHumiditySensor.getTemperature() < temperature ? true : false;
 	    		}
 	    			    		
-	    		if(humidityFlag && temperatureFlag){
+	    		if(humidityFlag || temperatureFlag){
 	    			senseDeviceSceneRelateService.senseDeviceSceneRelateAction(senseDeviceSceneRelateTemp);//执行情景关联控制
 	    		}	    			    	
 	    	}			    				    				    					    
@@ -186,15 +186,20 @@ public class GatewayMessageServiceImpl implements IGatewayMessageService {
 	    		methane = Float.parseFloat(triggerSourceJson.getString("methane"));
 	    		methaneCompareSymbols = triggerSourceJson.getString("methaneCompareSymbols");
 	    		
+	    		System.out.println("------current carbon_monoxide :" + combustibleGasSensor.getCarbon_monoxide() + 
+	    				" ---carbon_monoxide:" + carbon_monoxide + " ----methaneCompareSymbols:" + methaneCompareSymbols);
+	    		System.out.println("------current methane:" + combustibleGasSensor.getMethane() + 
+	    				" methane:" + methane + " ----methaneCompareSymbols:" + methaneCompareSymbols);
+	    		
 	    		if(">".equals(carbon_monoxideCompareSymbols)){
 	    			carbon_monoxideFlag = combustibleGasSensor.getCarbon_monoxide() > carbon_monoxide ? true : false;
 	    		}
-	    		
+	    		System.out.println("----carbon_monoxideFlag----:" + carbon_monoxideFlag);
 	    		if(">".equals(methaneCompareSymbols)){
-	    			methaneFlag = combustibleGasSensor.getMethane() >= methane ? true : false;
+	    			methaneFlag = combustibleGasSensor.getMethane() > methane ? true : false;
 	    		}
-	    		
-	    		if(carbon_monoxideFlag && methaneFlag){
+	    		System.out.println("----methaneFlag----:" + methaneFlag);
+	    		if(carbon_monoxideFlag || methaneFlag){
 	    			senseDeviceSceneRelateService.senseDeviceSceneRelateAction(senseDeviceSceneRelateTemp);//执行情景关联控制
 	    		}	    			    	
 	    	}			    				    				    					    

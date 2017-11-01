@@ -45,7 +45,8 @@ public class MsFromGwController extends BaseAction{
     	String data = CommonUtils.ReqtoString(request).substring(10);//获取网关上报的信息
 	    
     	JSONObject jsonData = JSONObject.fromObject(data);
-    	gatewayMessageService.parseSenseDeviceAndAction(jsonData);
+    	System.out.println(jsonData.toString());
+    	gatewayMessageService.parseSenseDeviceAndAction(jsonData);        
 	}
     
     /**

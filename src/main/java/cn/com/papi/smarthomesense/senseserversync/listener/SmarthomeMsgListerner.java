@@ -39,7 +39,6 @@ public class SmarthomeMsgListerner implements MessageListener{
 		switch (msgType) {
 		case "del-gateway":
 			String gatewayId = msgJson.getMsgMap().get("gatewayId").toString();
-						
 			try {				
 				/***** 删除网关下的智能设备****/				 
 				List<SenseDeviceBean> deviceList = senseDeviceService.getListByIdGateway(gatewayId);

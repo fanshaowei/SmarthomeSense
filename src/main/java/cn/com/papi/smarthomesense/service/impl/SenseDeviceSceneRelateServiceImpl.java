@@ -22,6 +22,7 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import cn.com.papi.common.config.SmarthomeSenseConfig;
@@ -31,7 +32,8 @@ import cn.com.papi.smarthomesense.mapper.SenseDeviceSceneRelateMapper;
 import cn.com.papi.smarthomesense.service.IRedisUtilService;
 import cn.com.papi.smarthomesense.service.ISenseDeviceSceneRelateService;
 
-@Service("senseDeviceSceneRelateService")
+@Service(value ="senseDeviceSceneRelateService")
+@Scope("prototype")
 public class SenseDeviceSceneRelateServiceImpl implements ISenseDeviceSceneRelateService {
 	Logger logger = Logger.getLogger(SenseDeviceSceneRelateServiceImpl.class.getName());
 	
